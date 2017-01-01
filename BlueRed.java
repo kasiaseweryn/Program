@@ -38,19 +38,66 @@ public class BlueRed extends JPanel {
 		     this.prevY = 0;
 		 }
 		 public double distance(double x, double y){return Math.sqrt(Math.pow((ballX - x),2)+Math.pow((ballY - y),2));}
-		 public void addVel(double x, double y){ballX+=x; ballY+=y;}
-		 public boolean setEnemy()
+		 public void addVel(double x, double y)
 		 {
-		   if (enemy.isDead)	 
-			for (int i = 0; i < blueOnes.length; i++)
-			{
-				if (!blueOnes[i].isDead)
-				{
-					enemy = blueOnes[i]; //podstawowa, nieoptymalna wersja
-					flag = false;
-				}	
-			} 
-			return false;
+			 if ((detected2(this, ballX - 1, ballY ) == false) && (this.enemy.ballX < this.ballX) && (this.enemy.ballY == this.ballY))
+			 {
+				 prevX = ballX;          
+				 prevY = ballY;
+				 ballX-=1;              
+			 }
+			 else
+			 if ((detected2(this, ballX - 1, ballY + 1) == false) && (this.enemy.ballX < this.ballX) && (this.enemy.ballY > this.ballY ))
+			 {
+				 prevX = ballX;          
+				 prevY = ballY;
+				 ballX-=1;       
+				 ballY+=1;
+			 }
+			 else
+			 if ((detected2(this, ballX - 1, ballY - 1) == false) && (this.enemy.ballX < this.ballX) && (this.enemy.ballY < this.ballY) /*&& back(ballX -1, ballY) == false*/)
+			 {
+				 prevX = ballX;          
+				 prevY = ballY;
+				 ballX-=1;
+				 ballY-=1;
+			 }
+			 else
+			 {                       
+			   prevX = ballX;          
+			   prevY = ballY;
+			   ballX+=x;              
+			   ballY+=y;
+			 }
+		 }
+		 public void addVelB(double x, double y)
+		 {                       
+			   prevX = ballX;          
+			   prevY = ballY;
+			   ballX+=x;              
+			   ballY+=y;
+		 }
+		 public void setEnemy()
+		 {
+			  if (enemy.isDead == true){ flag = false; System.out.println("Im doing this");}//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			  for(int i  = 0; i < redOnes.length; i++)   //najbli¿sza niebieska kulka i jej odleg³oœæ
+			  {  
+				 for(int j = 0; j < blueOnes.length; j++)
+					if (!blueOnes[j].isDead)
+					{
+					     redOnes[i].enemy = blueOnes[j];
+						 redOnes[i].min = redOnes[i].distance(blueOnes[j].ballX, blueOnes[j].ballY);
+						 break;
+				    }
+				  for(int j = 0; j < blueOnes.length; j++)
+				  {
+					  if ((redOnes[i].distance(blueOnes[j].ballX, blueOnes[j].ballY) < redOnes[i].min) && (!blueOnes[j].isDead));
+					  {  
+						 redOnes[i].enemy = blueOnes[j];
+					     redOnes[i].min = Math.sqrt(Math.pow((redOnes[i].ballX-blueOnes[j].ballX),2)+Math.pow((redOnes[i].ballY-blueOnes[j].ballY),2));
+					  }   
+				  }
+			  } 
 		 }
 		 public boolean back(double x,double y)
 		 {
@@ -59,7 +106,12 @@ public class BlueRed extends JPanel {
 		 }
          public void harmR(int str)
 		 {
-			if (enemy.isDead == true) return;
+		/*	if (enemy.isDead == true)
+			{
+				System.out.println("I`m doing this!");
+				flag = false;
+				return;
+			}	*/
 			 if ((str <= 100) && (str >= 90))
 			 {
 				 health -= 0.15;
@@ -110,32 +162,37 @@ public class BlueRed extends JPanel {
    private static final int BOX_HEIGHT = 480;
    private Ball [] redOnes;
    private Ball [] blueOnes;
-   private static boolean reservedR[];
-   private static boolean reservedB[];
    
    public boolean detected(Ball b) //
    {
   	 for (int i = 0; i < redOnes.length; i++)
-  		 if ((b.distance(redOnes[i].ballX, redOnes[i].ballY) < (b.ballRadius + redOnes[i].ballRadius) ) && (redOnes[i] != b) && (redOnes[i].isDead == false) )
+  		 if (((b.distance(redOnes[i].ballX, redOnes[i].ballY)) < (b.ballRadius + redOnes[i].ballRadius + 1) ) && (redOnes[i] != b) && (redOnes[i].isDead == false) )
   			 return true;
   	 for (int i = 0; i < blueOnes.length; i++)
-  		if ((b.distance(blueOnes[i].ballX, blueOnes[i].ballY) < (b.ballRadius + blueOnes[i].ballRadius)) && (blueOnes[i] != b) && (blueOnes[i].isDead == false) )
+  		if (((b.distance(blueOnes[i].ballX, blueOnes[i].ballY)) < (b.ballRadius + blueOnes[i].ballRadius + 1)) && (blueOnes[i] != b) && (blueOnes[i].isDead == false) )
   			 return true;
   	 return false;
    }
-   public boolean detected2(Ball b,double x, double y) //sprawdzanie czy dany punkt nale¿y do kulki
+   
+   public boolean detected2(Ball b,double x, double y) //sprawdzamy czy punkt do którego chcemy iœæ nale¿y do innej kulki ni¿ ta podana jako parametr
    {
 	   for (int i = 0; i < redOnes.length; i++)
 	   {
-		   if ((redOnes[i].distance(x, y) <= redOnes[i].ballRadius) && (redOnes[i] != b))
+		   if (((redOnes[i].distance(x, y)) <= redOnes[i].ballRadius + 4) && (redOnes[i] != b) && (!redOnes[i].isDead))
 			   return true; //logika powinna byæ ok
 	   }
-       return false;
+	   for (int i = 0; i < blueOnes.length; i++)      ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	   {
+		   if (((blueOnes[i].distance(x, y)) <= blueOnes[i].ballRadius + 4) && (blueOnes[i] != b) && (blueOnes[i].isDead))
+			   return false; 
+	   }
+       return false; 
    }
+   
    public boolean occupied(double x, double y, int i)
    {
 	   for(int j = 0; j < i; j++)
-		  if(redOnes[j].distance(x,y) <= redOnes[j].ballRadius)
+		  if(redOnes[j].distance(x,y) <= redOnes[j].ballRadius + 4)
 			  return true;
 	   return false;
    }
@@ -144,6 +201,13 @@ public class BlueRed extends JPanel {
 	   if ((redOnes[i].enemy.ballY > redOnes[i].ballY) && (redOnes[i].enemy.ballX > redOnes[i].ballX) && (detected(redOnes[i]) == false))
 		   return true;
 	   return false;
+   }
+   public boolean min(Ball c, double min,double a, double b)
+   {
+     if(c.distance(a, b) < min)
+	   return true;
+     else
+       return false;
    }
    private static final int UPDATE_RATE = 30; // Number of refresh per second
   
@@ -154,16 +218,13 @@ public class BlueRed extends JPanel {
 	  redOnes = new Ball[70];
 	  blueOnes = new Ball[70];
 	  
-	  reservedR = new boolean[blueOnes.length];
-	  reservedB = new boolean[redOnes.length];
-	  
 	  for(int i = 0; i < redOnes.length; i++)
 	  {
 		  boolean flag = false;
 		  while (!flag){
 		  int x = r.nextInt(60)+20;
 		  int y = r.nextInt(400)+10;
-          if(occupied(x,y,i) == false)
+          if(occupied(x,y,i) == false) 
           {
         	 flag = true;
 		     redOnes[i] = new Ball(5, x, y,1,0,r.nextInt(30)+70,new Color(255,1,1));
@@ -171,7 +232,7 @@ public class BlueRed extends JPanel {
           }
       }	  
 	  for(int i = 0; i < blueOnes.length;i++)
-		  blueOnes[i] = new Ball(5,r.nextInt(60)+570,r.nextInt(430)+10,-1,0, r.nextInt(30)+70,new Color(1,1,255));
+		  blueOnes[i] = new Ball(5,r.nextInt(60) + 570,r.nextInt(430)+10,-1,0, r.nextInt(30)+70,new Color(1,1,255));
 	  
 	  for(int i  = 0; i < redOnes.length; i++)   //najbli¿sza niebieska kulka i jej odleg³oœæ
 	  {
@@ -179,24 +240,21 @@ public class BlueRed extends JPanel {
 		  redOnes[i].min = Math.sqrt(Math.pow((redOnes[i].ballX - blueOnes[0].ballX),2)+Math.pow((redOnes[i].ballY-blueOnes[0].ballY),2));
 		  for(int j = 0; j < blueOnes.length; j++)
 		  {
-			  if (((Math.sqrt(Math.pow((redOnes[i].ballX-blueOnes[j].ballX),2)+Math.pow((redOnes[i].ballY-blueOnes[j].ballY),2)) < redOnes[i].min)) && (reservedR[j] == false))
+			  if (((Math.sqrt(Math.pow((redOnes[i].ballX-blueOnes[j].ballX),2)+Math.pow((redOnes[i].ballY-blueOnes[j].ballY),2)) < redOnes[i].min)))
 			  {  
-				 reservedR[j] = true;
 				 redOnes[i].enemy = blueOnes[j];
 			     redOnes[i].min = Math.sqrt(Math.pow((redOnes[i].ballX-blueOnes[j].ballX),2)+Math.pow((redOnes[i].ballY-blueOnes[j].ballY),2));
 			  }   
 		  }
-		 // if (redOnes[i].enemy == null) System.out.print("I have no enemy!");
 	  }
-	  for(int i  = 0; i < blueOnes.length; i++)   //najbli¿sza niebieska kulka i jej odleg³oœæ
+	  for(int i  = 0; i < blueOnes.length; i++)   
 	  {
 		  blueOnes[i].enemy = redOnes[0];
 		  blueOnes[i].min = Math.sqrt(Math.pow((blueOnes[i].ballX - redOnes[0].ballX),2)+Math.pow((blueOnes[i].ballY-redOnes[0].ballY),2));
 		  for(int j = 0; j < redOnes.length; j++)
 		  {
-			  if (((Math.sqrt(Math.pow((blueOnes[i].ballX-redOnes[j].ballX),2)+Math.pow((blueOnes[i].ballY-redOnes[j].ballY),2)) < blueOnes[i].min)) && (reservedB[j] == false))
+			  if (((Math.sqrt(Math.pow((blueOnes[i].ballX-redOnes[j].ballX),2)+Math.pow((blueOnes[i].ballY-redOnes[j].ballY),2)) < blueOnes[i].min)))
 			  {  
-				 reservedB[j] = true;
 				 blueOnes[i].enemy = redOnes[j];
 			     blueOnes[i].min = Math.sqrt(Math.pow((blueOnes[i].ballX-redOnes[j].ballX),2)+Math.pow((blueOnes[i].ballY-redOnes[j].ballY),2));
 			  }   
@@ -211,84 +269,123 @@ public class BlueRed extends JPanel {
          	  {
     			  redOnes[i].setEnemy();
     			  for(int j = 0; j < blueOnes.length;j++)
-    				  if (redOnes[i].distance(blueOnes[j].ballX,blueOnes[j].ballY) < (redOnes[i].ballRadius+blueOnes[j].ballRadius))
+    				  if ((redOnes[i].distance(blueOnes[j].ballX,blueOnes[j].ballY) <= (redOnes[i].ballRadius+blueOnes[j].ballRadius)) && (!blueOnes[j].isDead))
     				  { 
     					   redOnes[i].flag = true;
     					   redOnes[i].harmR(blueOnes[j].strenght);
     				  }
     				  if (redOnes[i].flag == false)
     				  {  
-    					 
-         		         if ((redOnes[i].enemy.ballY > redOnes[i].ballY) && (redOnes[i].enemy.ballX > redOnes[i].ballX) && (detected(redOnes[i]) == false))
-         		        	redOnes[i].addVel(redOnes[i].ballSpeedX, 0.25);
-         		         else if ((redOnes[i].enemy.ballY < redOnes[i].ballY)&& (redOnes[i].enemy.ballX > redOnes[i].ballX) && (detected(redOnes[i]) == false))
-         		        	redOnes[i].addVel(redOnes[i].ballSpeedX,-0.25);
-         		         else if ((redOnes[i].enemy.ballY < redOnes[i].ballY)&& (redOnes[i].enemy.ballX < redOnes[i].ballX) && (detected(redOnes[i]) == false))
-         		        	redOnes[i].addVel(-redOnes[i].ballSpeedX, -0.25);
-         		         else if ((redOnes[i].enemy.ballY > redOnes[i].ballY)&& (redOnes[i].enemy.ballX < redOnes[i].ballX) && (detected(redOnes[i]) == false))
-         		        	redOnes[i].addVel(-redOnes[i].ballSpeedX, +0.25);
-         		         else if ((redOnes[i].enemy.ballY < redOnes[i].ballY)&& (redOnes[i].enemy.ballX == redOnes[i].ballX) && (detected(redOnes[i]) == false))
-         		        	redOnes[i].addVel(0, -0.25);
-         		         else if ((redOnes[i].enemy.ballY > redOnes[i].ballY) && (redOnes[i].enemy.ballX == redOnes[i].ballX) && (detected(redOnes[i]) == false))
-         		        	redOnes[i].addVel(0, +0.25);
-         		         else if ((redOnes[i].enemy.ballY == redOnes[i].ballY) && (redOnes[i].enemy.ballX > redOnes[i].ballX) && (detected(redOnes[i]) == false))
-         		        	redOnes[i].addVel(redOnes[i].ballSpeedX, 0);
-         		         else if ((redOnes[i].enemy.ballY == redOnes[i].ballY)&& (redOnes[i].enemy.ballX < redOnes[i].ballX) && (detected(redOnes[i]) == false))
-         		        	redOnes[i].addVel(-redOnes[i].ballSpeedX, 0);
+         		         if ((redOnes[i].enemy.ballY > redOnes[i].ballY) && (redOnes[i].enemy.ballX > redOnes[i].ballX) && (detected(redOnes[i]) == false) && (detected2(redOnes[i], redOnes[i].ballX + 1, redOnes[i].ballY + 1) == false) && redOnes[i].back(redOnes[i].ballX + 1,redOnes[i].ballY + 1) == false)                                                                                 
+         		        	redOnes[i].addVel(1, 1);
+         		         else if ((redOnes[i].enemy.ballY < redOnes[i].ballY)&& (redOnes[i].enemy.ballX > redOnes[i].ballX) && (detected(redOnes[i]) == false) && (detected2(redOnes[i], redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY - 1) == false) && redOnes[i].back(redOnes[i].ballX+redOnes[i].ballSpeedX,redOnes[i].ballY - 1) == false)
+         		        	redOnes[i].addVel(1,-1);
+         		         else if ((redOnes[i].enemy.ballY < redOnes[i].ballY)&& (redOnes[i].enemy.ballX < redOnes[i].ballX) && (detected(redOnes[i]) == false) && (detected2(redOnes[i], redOnes[i].ballX - redOnes[i].ballSpeedX, redOnes[i].ballY - 1) == false) && redOnes[i].back(redOnes[i].ballX-redOnes[i].ballSpeedX,redOnes[i].ballY - 1) == false)
+         		        	redOnes[i].addVel(-1, -1);
+         		         else if ((redOnes[i].enemy.ballY > redOnes[i].ballY)&& (redOnes[i].enemy.ballX < redOnes[i].ballX) && (detected(redOnes[i]) == false) && (detected2(redOnes[i], redOnes[i].ballX - redOnes[i].ballSpeedX, redOnes[i].ballY + 1) == false) && redOnes[i].back(redOnes[i].ballX-redOnes[i].ballSpeedX,redOnes[i].ballY + 1) == false)
+         		        	redOnes[i].addVel(-1, 1);
+         		         else if ((redOnes[i].enemy.ballY < redOnes[i].ballY)&& (redOnes[i].enemy.ballX == redOnes[i].ballX) && (detected(redOnes[i]) == false) && (detected2(redOnes[i], redOnes[i].ballX, redOnes[i].ballY - 1) == false) && redOnes[i].back(redOnes[i].ballX, redOnes[i].ballY - 1) == false)
+         		        	redOnes[i].addVel(0, -1);
+         		         else if ((redOnes[i].enemy.ballY > redOnes[i].ballY) && (redOnes[i].enemy.ballX == redOnes[i].ballX) && (detected(redOnes[i]) == false) && (detected2(redOnes[i], redOnes[i].ballX, redOnes[i].ballY + 1) == false) && redOnes[i].back(redOnes[i].ballX,redOnes[i].ballY + 1) == false)
+         		        	redOnes[i].addVel(0, 1);
+         		         else if ((redOnes[i].enemy.ballY == redOnes[i].ballY) && (redOnes[i].enemy.ballX > redOnes[i].ballX) && (detected(redOnes[i]) == false) && (detected2(redOnes[i], redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY) == false) && redOnes[i].back(redOnes[i].ballX+redOnes[i].ballSpeedX,redOnes[i].ballY) == false)
+         		        	redOnes[i].addVel(1, 0);
+         		         else if ((redOnes[i].enemy.ballY == redOnes[i].ballY)&& (redOnes[i].enemy.ballX < redOnes[i].ballX) && (detected(redOnes[i]) == false) && (detected2(redOnes[i], redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY) == false) && redOnes[i].back(redOnes[i].ballX - redOnes[i].ballSpeedX,redOnes[i].ballY) == false)
+         		        	redOnes[i].addVel(-1, 0);
          		         else
          		         {
-         		        	if(detected2(redOnes[i], redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY) == false)
-         		        		redOnes[i].addVel(redOnes[i].ballSpeedX, 0);
-         		        	else if(detected2(redOnes[i], redOnes[i].ballX, redOnes[i].ballY + 0.25) == false)
-         		        		redOnes[i].addVel(0, 0.25);
-         		        	else if(detected2(redOnes[i], redOnes[i].ballX, redOnes[i].ballY - 0.25) == false)
-         		        		redOnes[i].addVel(0, -0.25);
-         		        	else if(detected2(redOnes[i], redOnes[i].ballX - redOnes[i].ballSpeedX, redOnes[i].ballY) == false)
-         		        		redOnes[i].addVel(-redOnes[i].ballSpeedX, 0);
-         		        	else if(detected2(redOnes[i], redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY + 0.25) == false)
-         		        		redOnes[i].addVel(redOnes[i].ballSpeedX, 0.25);
-         		        	else if(detected2(redOnes[i], redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY - 0.25) == false)
-         		        		redOnes[i].addVel(redOnes[i].ballSpeedX, -0.25);
-         		        	else if(detected2(redOnes[i], redOnes[i].ballX - redOnes[i].ballSpeedX, redOnes[i].ballY - 0.25) == false)
-         		        		redOnes[i].addVel(-redOnes[i].ballSpeedX, -0.25);
-         		        	else if(detected2(redOnes[i], redOnes[i].ballX - redOnes[i].ballSpeedX, redOnes[i].ballY + 0.25) == false)
-         		        		redOnes[i].addVel(-redOnes[i].ballSpeedX, +0.25);
+         		        	double movX = 0;
+       					    double movY = 0;
+       					    double min1 = redOnes[i].distance(redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY + 1);
+         		        	 
+         		        	if((detected2(redOnes[i], redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY) == false) && (min(redOnes[i],min1,redOnes[i].ballX + redOnes[i].ballSpeedX,redOnes[i].ballY) || ((redOnes[i].enemy.ballY == redOnes[i].ballY) && (redOnes[i].enemy.ballX > redOnes[i].ballX))) && redOnes[i].back(redOnes[i].ballX+redOnes[i].ballSpeedX,redOnes[i].ballY) == false)
+         		        	{
+         		        	    min1 = redOnes[i].distance(redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY);
+         		        	    movX = 1;
+         		        	    movY = 0;         		        		
+         		        	}
+         		        	else if(detected2(redOnes[i], redOnes[i].ballX, redOnes[i].ballY + 1) == false && (min(redOnes[i],min1,redOnes[i].ballX,redOnes[i].ballY + 1) || ((redOnes[i].enemy.ballY > redOnes[i].ballY) && (redOnes[i].enemy.ballX == redOnes[i].ballX))) && redOnes[i].back(redOnes[i].ballX, redOnes[i].ballY + 1) == false)
+         		        	{
+         		        		min1 = redOnes[i].distance(redOnes[i].ballX, redOnes[i].ballY + 1);
+         		        	    movX = 0;
+         		        	    movY = 1;
+         		        	}
+         		        	else if(detected2(redOnes[i], redOnes[i].ballX, redOnes[i].ballY - 1) == false &&(min(redOnes[i],min1,redOnes[i].ballX + redOnes[i].ballSpeedX,redOnes[i].ballY - 1) || ((redOnes[i].enemy.ballY < redOnes[i].ballY) && (redOnes[i].enemy.ballX > redOnes[i].ballX))) && redOnes[i].back(redOnes[i].ballX+redOnes[i].ballSpeedX,redOnes[i].ballY - 1) == false)
+         		        	{
+         		        		min1 = redOnes[i].distance(redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY -1);
+         		        	    movX = redOnes[i].ballSpeedX;
+         		        	    movY = -1;
+         		        	}
+         		        	else if(detected2(redOnes[i], redOnes[i].ballX - redOnes[i].ballSpeedX, redOnes[i].ballY) == false && (min(redOnes[i],min1,redOnes[i].ballX - redOnes[i].ballSpeedX,redOnes[i].ballY) || ((redOnes[i].enemy.ballY == redOnes[i].ballY) && (redOnes[i].enemy.ballX < redOnes[i].ballX))) && redOnes[i].back(redOnes[i].ballX-redOnes[i].ballSpeedX, redOnes[i].ballY) == false)
+         		        	{
+         		        		min1 = redOnes[i].distance(redOnes[i].ballX - redOnes[i].ballSpeedX, redOnes[i].ballY);
+         		        	    movX = -redOnes[i].ballSpeedX;
+         		        	    movY = 0;
+         		        	}
+         		        	else if(detected2(redOnes[i], redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY + 1) == false && (min(redOnes[i],min1,redOnes[i].ballX + redOnes[i].ballSpeedX,redOnes[i].ballY+1) || ((redOnes[i].enemy.ballY > redOnes[i].ballY) && (redOnes[i].enemy.ballX > redOnes[i].ballX))) && redOnes[i].back(redOnes[i].ballX+redOnes[i].ballSpeedX,redOnes[i].ballY + 1) == false)
+         		        	{
+         		        		min1 = redOnes[i].distance(redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY + 1);
+         		        	    movX = 1;
+         		        	    movY = 1;
+         		        	}
+         		        	else if(detected2(redOnes[i], redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY - 1) == false && (min(redOnes[i],min1,redOnes[i].ballX + redOnes[i].ballSpeedX,redOnes[i].ballY - 1) || ((redOnes[i].enemy.ballY < redOnes[i].ballY) && (redOnes[i].enemy.ballX > redOnes[i].ballX))) && redOnes[i].back(redOnes[i].ballX+redOnes[i].ballSpeedX,redOnes[i].ballY - 1) == false)
+         		        	{
+         		        		min1 = redOnes[i].distance(redOnes[i].ballX + redOnes[i].ballSpeedX, redOnes[i].ballY - 1);
+         		        	    movX = redOnes[i].ballSpeedX;
+         		        	    movY = -1;
+         		        	}
+         		        	else if(detected2(redOnes[i], redOnes[i].ballX - redOnes[i].ballSpeedX, redOnes[i].ballY - 1) == false && (min(redOnes[i],min1,redOnes[i].ballX - redOnes[i].ballSpeedX,redOnes[i].ballY - 1) || ((redOnes[i].enemy.ballY < redOnes[i].ballY) && (redOnes[i].enemy.ballX < redOnes[i].ballX))) && redOnes[i].back(redOnes[i].ballX - redOnes[i].ballSpeedX,redOnes[i].ballY - 1) == false)
+         		        	{
+         		        		min1 = redOnes[i].distance(redOnes[i].ballX - redOnes[i].ballSpeedX, redOnes[i].ballY - 1);
+         		        	    movX = -redOnes[i].ballSpeedX;
+         		        	    movY = -1;
+         		        	}
+         		        	else if(detected2(redOnes[i], redOnes[i].ballX - redOnes[i].ballSpeedX, redOnes[i].ballY + 1) == false && (min(redOnes[i],min1,redOnes[i].ballX - redOnes[i].ballSpeedX,redOnes[i].ballY + 1) || ((redOnes[i].enemy.ballY > redOnes[i].ballY) && (redOnes[i].enemy.ballX < redOnes[i].ballX))) && redOnes[i].back(redOnes[i].ballX - redOnes[i].ballSpeedX,redOnes[i].ballY + 1) == false)
+         		        	{
+         		        		min1 = redOnes[i].distance(redOnes[i].ballX+=redOnes[i].ballSpeedX, redOnes[i].ballY+=1);
+         		        	    movX = -redOnes[i].ballSpeedX;
+         		        	    movY = +1;
+         		        	}
+         		        	redOnes[i].addVel(movX, movY);
          		         }
     				  }
          	  }
                for(int i = 0; i < blueOnes.length;i++){
             	   for(int j = 0; j < redOnes.length;j++)
-     				  if (blueOnes[i].distance(redOnes[j].ballX,redOnes[j].ballY) < (redOnes[j].ballRadius+blueOnes[i].ballRadius))
+     				  if ((blueOnes[i].distance(redOnes[j].ballX,redOnes[j].ballY) < (redOnes[j].ballRadius+blueOnes[i].ballRadius)) && (!redOnes[j].isDead))
      				  {	
      					  blueOnes[i].flag = true;
      					  blueOnes[i].harmB(redOnes[j].strenght);
      				  }	  
      				  if (blueOnes[i].flag == false) 
             	      {
-     				    
+     				    //
      					 if ((blueOnes[i].enemy.ballY > blueOnes[i].ballY) && (detected(blueOnes[i]) == false))
-     						blueOnes[i].addVel(blueOnes[i].ballSpeedX, 0.25);
+     						blueOnes[i].addVelB(blueOnes[i].ballSpeedX, 1);
          		         else if ((blueOnes[i].enemy.ballY < blueOnes[i].ballY) && (detected(blueOnes[i]) == false))
-         		        	blueOnes[i].addVel(blueOnes[i].ballSpeedX, -0.25);
+         		        	blueOnes[i].addVelB(blueOnes[i].ballSpeedX, -1);
          		        else
         		         {
-        		        	if(detected2(blueOnes[i], blueOnes[i].ballX + blueOnes[i].ballSpeedX, blueOnes[i].ballY) == false)
-        		        		blueOnes[i].addVel(blueOnes[i].ballSpeedX, 0);
-        		        	else if(detected2(blueOnes[i], blueOnes[i].ballX, blueOnes[i].ballY + 0.25) == false)
-        		        		blueOnes[i].addVel(0, 0.25);
-        		        	else if(detected2(blueOnes[i], blueOnes[i].ballX, blueOnes[i].ballY - 0.25) == false)
-        		        		blueOnes[i].addVel(0, -0.25);
-        		        	else if(detected2(blueOnes[i], blueOnes[i].ballX - blueOnes[i].ballSpeedX, blueOnes[i].ballY) == false)
-        		        		blueOnes[i].addVel(-blueOnes[i].ballSpeedX, 0);
-        		        	else if(detected2(blueOnes[i], blueOnes[i].ballX + blueOnes[i].ballSpeedX, blueOnes[i].ballY+0.25) == false)
-        		        		blueOnes[i].addVel(blueOnes[i].ballSpeedX, 0.25);
-        		        	else if(detected2(blueOnes[i], blueOnes[i].ballX + blueOnes[i].ballSpeedX, blueOnes[i].ballY - 0.25))
-        		        		blueOnes[i].addVel(blueOnes[i].ballSpeedX, -0.25);
-        		        	else if(detected2(blueOnes[i], blueOnes[i].ballX - blueOnes[i].ballSpeedX, blueOnes[i].ballY-0.25))
-        		        		blueOnes[i].addVel(-blueOnes[i].ballSpeedX, -0.25);
-        		        	else if(detected2(blueOnes[i], blueOnes[i].ballX - blueOnes[i].ballSpeedX, blueOnes[i].ballY+0.25))
-        		        		blueOnes[i].addVel(-blueOnes[i].ballSpeedX, 0.25);
+        		        	if((detected2(blueOnes[i], blueOnes[i].ballX + blueOnes[i].ballSpeedX, blueOnes[i].ballY) == false)  && blueOnes[i].back(blueOnes[i].ballX + blueOnes[i].ballSpeedX,blueOnes[i].ballY) == false)
+        		        		blueOnes[i].addVelB(blueOnes[i].ballSpeedX, 0);
+        		        	else if ((detected2(blueOnes[i], blueOnes[i].ballX, blueOnes[i].ballY + 1) == false)  && blueOnes[i].back(blueOnes[i].ballX,blueOnes[i].ballY + 1) == false)
+        		        		blueOnes[i].addVelB(0, 1);
+        		        	else if ((detected2(blueOnes[i], blueOnes[i].ballX, blueOnes[i].ballY - 1) == false)  && blueOnes[i].back(blueOnes[i].ballX, blueOnes[i].ballY - 1) == false)
+        		        		blueOnes[i].addVelB(0, -1);
+        		        	else if ((detected2(blueOnes[i], blueOnes[i].ballX - blueOnes[i].ballSpeedX, blueOnes[i].ballY) == false) && blueOnes[i].back(blueOnes[i].ballX - blueOnes[i].ballSpeedX, blueOnes[i].ballY) == false)
+        		        		blueOnes[i].addVelB(-blueOnes[i].ballSpeedX, 0);
+        		        	else if ((detected2(blueOnes[i], blueOnes[i].ballX + blueOnes[i].ballSpeedX, blueOnes[i].ballY+1) == false) && blueOnes[i].back(blueOnes[i].ballX + blueOnes[i].ballSpeedX,blueOnes[i].ballY + 1) == false)
+        		        		blueOnes[i].addVelB(blueOnes[i].ballSpeedX, 1);
+        		        	else if ((detected2(blueOnes[i], blueOnes[i].ballX + blueOnes[i].ballSpeedX, blueOnes[i].ballY - 1))  && blueOnes[i].back(blueOnes[i].ballX + blueOnes[i].ballSpeedX,blueOnes[i].ballY - 1) == false)
+        		        		blueOnes[i].addVelB(blueOnes[i].ballSpeedX, -1);
+        		        	else if ((detected2(blueOnes[i], blueOnes[i].ballX - blueOnes[i].ballSpeedX, blueOnes[i].ballY-1))  && blueOnes[i].back(blueOnes[i].ballX - blueOnes[i].ballSpeedX,blueOnes[i].ballY - 1) == false)
+        		        		blueOnes[i].addVelB(-blueOnes[i].ballSpeedX, -1);
+        		        	else if ((detected2(blueOnes[i], blueOnes[i].ballX - blueOnes[i].ballSpeedX, blueOnes[i].ballY+1))  && blueOnes[i].back(blueOnes[i].ballX - blueOnes[i].ballSpeedX,blueOnes[i].ballY + 1) == false)
+        		        		blueOnes[i].addVelB(-blueOnes[i].ballSpeedX, 1);
+        		        
         		         }
+     					 //
+     					 
           	          } 
                }
                // Refresh the display
@@ -315,21 +412,27 @@ public class BlueRed extends JPanel {
   
       for (int i = 0; i < redOnes.length;i++)
       {
-    	if (redOnes[i].flag == false)  
-    	   g.setColor(Color.RED);
-    	else    	
-           g.setColor(redOnes[i].fading);
-           g.fillOval((int) (redOnes[i].ballX - redOnes[i].ballRadius), (int) (redOnes[i].ballY - redOnes[i].ballRadius),
-               (int)(2 * redOnes[i].ballRadius), (int)(2 * redOnes[i].ballRadius));
+    	if (!redOnes[i].isDead)
+    	{ 
+    	  if (redOnes[i].flag == false)  
+    	     g.setColor(Color.RED);
+    	  else    	
+             g.setColor(redOnes[i].fading);
+             g.fillOval((int) (redOnes[i].ballX - redOnes[i].ballRadius), (int) (redOnes[i].ballY - redOnes[i].ballRadius),
+                 (int)(2 * redOnes[i].ballRadius), (int)(2 * redOnes[i].ballRadius));
+    	}
       }
       for (int i = 0; i < blueOnes.length;i++)
       {
-    	if (blueOnes[i].flag == false)  
-    	  g.setColor(Color.BLUE);
-    	else
-           g.setColor(blueOnes[i].fading);        	          
-           g.fillOval((int) (blueOnes[i].ballX - blueOnes[i].ballRadius), (int) (blueOnes[i].ballY - blueOnes[i].ballRadius),
-               (int)(2 * blueOnes[i].ballRadius), (int)(2 * blueOnes[i].ballRadius)); 
+    	if (!blueOnes[i].isDead)
+      	{   
+    	  if (blueOnes[i].flag == false)  
+    	    g.setColor(Color.BLUE);
+    	  else
+             g.setColor(blueOnes[i].fading);        	          
+             g.fillOval((int) (blueOnes[i].ballX - blueOnes[i].ballRadius), (int) (blueOnes[i].ballY - blueOnes[i].ballRadius),
+                 (int)(2 * blueOnes[i].ballRadius), (int)(2 * blueOnes[i].ballRadius));
+      	}     
       }
    }
   
