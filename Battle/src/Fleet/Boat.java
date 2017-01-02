@@ -11,8 +11,7 @@ import static Colision.Distance.*;
 public class Boat {
     private int size;
     private ArrayList<Warior> seats;
-    public int currentLocationX;
-    public int currentLocationY;
+    public Point currentLocation;
     private Point previousLocation;
     public Point targetLocation;
     private ArrayList<Point> coastH;
@@ -27,8 +26,7 @@ public class Boat {
         this.seats = new ArrayList<>();
         this.targetLocation = new Point(x,y);
         this.previousLocation = new Point(x,y);
-        this.currentLocationX = x;
-        this.currentLocationY = y;
+        this.currentLocation = new Point(x,y);
         this.coastH = coastH;
         this.coastP = coastP;
         this.rotation = 0;
@@ -43,8 +41,8 @@ public class Boat {
     }
 
     public void clearTarget(){
-        targetLocation.x = currentLocationX;
-        targetLocation.y = currentLocationY;
+        targetLocation.x = currentLocation.x;
+        targetLocation.y = currentLocation.y;
     }
 
     public void addWarior(Warior warior){
@@ -62,24 +60,36 @@ public class Boat {
     }
 
     public void move(Terrain mapa, ArrayList<Boat> boats) {
-        if (currentLocationX != targetLocation.x || currentLocationY != targetLocation.y) {
+        if (currentLocation.x != targetLocation.x || currentLocation.y != targetLocation.y) {
             if (targetLocation.x > targetLocation.y) {
-                if (currentLocationY - targetLocation.y > 0) {
+                if (currentLocation.y - targetLocation.y > 0) {
                     rotation = 0;
                     Up(mapa, boats);
                 }
-                else if (currentLocationY == targetLocation.y && currentLocationX > targetLocation.x) {
+                else {
+                    if (currentLocation.y == targetLocation.y && currentLocation.x > targetLocation.x) {
                         rotation = -90;
                         Left(mapa, boats);
+                    }
+                    else {
+                        rotation = 90;
+                        Right(mapa, boats);
+                    }
                 }
             }
             if (targetLocation.x < targetLocation.y){
-                if (currentLocationX - targetLocation.x > 0) {
+                if (currentLocation.x - targetLocation.x > 0) {
                     rotation = -90;
                     Left(mapa, boats);
-                } else if (currentLocationX == targetLocation.x && currentLocationY > currentLocationX){
-                    rotation = 0;
-                    Up(mapa, boats);
+                } else {
+                    if (currentLocation.x == targetLocation.x && currentLocation.y > currentLocation.x){
+                        rotation = 0;
+                        Up(mapa, boats);
+                    }
+                    else {
+                        rotation = 180;
+                        Down(mapa, boats);
+                    }
                 }
             }
         }
@@ -101,12 +111,12 @@ public class Boat {
     }
 
     private boolean check(Terrain mapa, ArrayList<Boat> boats) {
-        if(currentLocationX == previousLocation.x && currentLocationY == previousLocation.y) return false;
+        if(currentLocation.x == previousLocation.x && currentLocation.y == previousLocation.y) return false;
         for (Boat i:boats) {
             if (i != this) {
-                double distance = distanceC((currentLocationX +(width/2)),(i.currentLocationX +(i.width/2)), (currentLocationY +(this.length/2)), (i.currentLocationY +(i.length/2)));
+                double distance = distanceC((currentLocation.x +(width/2)),(i.currentLocation.x +(i.width/2)), (currentLocation.y +(this.length/2)), (i.currentLocation.y +(i.length/2)));
                 //if (distance < length/2 + i.length/2) return false;
-                if(currentLocationX < 0 || currentLocationY < 0 || currentLocationX > mapa.numRows || currentLocationY > mapa.numCols) return false;
+                if(currentLocation.x < 0 || currentLocation.y < 0 || currentLocation.x > mapa.numRows || currentLocation.y > mapa.numCols) return false;
             }
         }
         return true;
@@ -115,8 +125,8 @@ public class Boat {
     private void Left(Terrain mapa, ArrayList<Boat> boats)
     {
         //System.out.println("L");
-        int zx = currentLocationX;
-        int zy = currentLocationY;
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
         moveLeft();
         if(check(mapa, boats)) {
             previousLocation.x =zx; previousLocation.y =zy;return;}
@@ -143,8 +153,8 @@ public class Boat {
     public void Right(Terrain mapa, ArrayList<Boat> boats)
     {
         //System.out.println("R");
-        int zx = currentLocationX;
-        int zy = currentLocationY;
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
         moveRight();
         if(check(mapa, boats)) {
             previousLocation.x =zx; previousLocation.y =zy;return;}
@@ -171,8 +181,8 @@ public class Boat {
     public void Up(Terrain mapa, ArrayList<Boat> boats)
     {
         //System.out.println("U");
-        int zx = currentLocationX;
-        int zy = currentLocationY;
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
         moveUp();
         if(check(mapa, boats)) {
             previousLocation.x =zx; previousLocation.y =zy;return;}
@@ -200,8 +210,8 @@ public class Boat {
     public void Down(Terrain mapa, ArrayList<Boat> boats)
     {
         //System.out.println("D");
-        int zx = currentLocationX;
-        int zy = currentLocationY;
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
         moveDown();
         if(check(mapa, boats)) {
             previousLocation.x =zx; previousLocation.y =zy;return;}
@@ -228,8 +238,8 @@ public class Boat {
     public void TopLeft(Terrain mapa, ArrayList<Boat> boats)
     {
         //System.out.println("TL");
-        int zx = currentLocationX;
-        int zy = currentLocationY;
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
         moveTopLeft();
         if(check(mapa, boats)) {
             previousLocation.x =zx; previousLocation.y =zy;return;}
@@ -257,8 +267,8 @@ public class Boat {
     public void TopRight(Terrain mapa, ArrayList<Boat> boats)
     {
         //System.out.println("TR");
-        int zx = currentLocationX;
-        int zy = currentLocationY;
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
         moveTopRight();
         if(check(mapa, boats)) {
             previousLocation.x =zx; previousLocation.y =zy;return;}
@@ -285,8 +295,8 @@ public class Boat {
     public void BotLeft(Terrain mapa, ArrayList<Boat> boats)
     {
         //System.out.println("BL");
-        int zx = currentLocationX;
-        int zy = currentLocationY;
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
         moveBotLeft();
         if(check(mapa, boats)) {
             previousLocation.x =zx; previousLocation.y =zy;return;}
@@ -313,8 +323,8 @@ public class Boat {
     public void BotRight(Terrain mapa, ArrayList<Boat> boats)
     {
         //System.out.println("BR");
-        int zx = currentLocationX;
-        int zy = currentLocationY;
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
         moveBotRight();
         if(check(mapa, boats)) {
             previousLocation.x =zx; previousLocation.y =zy;return;}
@@ -339,38 +349,38 @@ public class Boat {
     }
 
     public void moveUp(){
-        currentLocationY--;
+        currentLocation.y--;
     }
     public void moveDown(){
-        currentLocationY++;
+        currentLocation.y++;
     }
 
     public void moveRight(){
-        currentLocationX++;
+        currentLocation.x++;
     }
 
     public void moveLeft(){
-        currentLocationX--;
+        currentLocation.x--;
     }
 
     public void moveTopRight(){
-        currentLocationX++;
-        currentLocationY--;
+        currentLocation.x++;
+        currentLocation.y--;
     }
 
     public void moveTopLeft(){
-        currentLocationX--;
-        currentLocationY--;
+        currentLocation.x--;
+        currentLocation.y--;
     }
 
     public void moveBotRight(){
-        currentLocationX++;
-        currentLocationY++;
+        currentLocation.x++;
+        currentLocation.y++;
     }
 
     public void moveBotLeft(){
-        currentLocationX--;
-        currentLocationY++;
+        currentLocation.x--;
+        currentLocation.y++;
     }
 
 
@@ -378,11 +388,11 @@ public class Boat {
         Graphics2D g2d = (Graphics2D) g.create();
         // Boat
         g2d.setColor(Colors.BOAT);
-        g2d.rotate(Math.toRadians(rotation), currentLocationX, currentLocationY);
-        g2d.fillRect(currentLocationX - width/2, currentLocationY - length/2, width, length);
+        g2d.rotate(Math.toRadians(rotation), currentLocation.x, currentLocation.y);
+        g2d.fillRect(currentLocation.x - width/2, currentLocation.y - length/2, width, length);
         // Center
         g.setColor(Colors.LOCATION);
-        g.fillRect(currentLocationX, currentLocationY, 1, 1);
+        g.fillRect(currentLocation.x, currentLocation.y, 1, 1);
         // Target
         g.fillRect(targetLocation.x, targetLocation.y, 5, 5);
     }

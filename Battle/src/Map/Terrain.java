@@ -46,7 +46,7 @@ public class Terrain {
                 color[i] = Colors.CITY;
             }
             // Viking island
-            else if ((distanceC(numRows,x,numCols,y) < numCols/4)) {
+            else if ((distanceC(numRows,x,numCols,y) < numCols*0.30)) {
                 color[i] = Colors.HILLS;
                 }
             // Main island

@@ -22,7 +22,7 @@ public class Screen extends JPanel {
         // Generate map and agents
         mapa = new Terrain(rows,cols,seeds);
         village = new Village(mapa);
-        base = new Building(new Point(800,800),40,40,0);
+        base = new Building(new Point(850,850),40,40,0);
 //        obstacles = new ArrayList<Obstacle>();
         fleet = new Fleet(mapa, village);
 //        fleet.setTargetLocation(mapa, village);

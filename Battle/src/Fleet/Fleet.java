@@ -37,7 +37,7 @@ public class Fleet {
             y = coastH.get(i).y - length;
             noColision = true;
             for (Boat j : boats) {
-                double distance = distanceC((x + (width / 2)), (j.currentLocationX + (j.width / 2)), (y + (length / 2)), (j.currentLocationY + (j.length / 2)));
+                double distance = distanceC((x + (width / 2)), (j.currentLocation.x + (j.width / 2)), (y + (length / 2)), (j.currentLocation.y + (j.length / 2)));
                 if (distance < length * 1.1) {
                     noColision = false;
                 }
