@@ -28,7 +28,6 @@ public class Screen extends JPanel {
 //        fleet.setTargetLocation(mapa, village);
 //        vikings = new Vikings(???);
 //        villagers = new Villagers(???);
-
         setIgnoreRepaint(true);
     }
 

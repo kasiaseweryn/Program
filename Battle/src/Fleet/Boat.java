@@ -84,20 +84,19 @@ public class Boat {
             }
         }
 
-//        if(currentLocationX - targetLocationX > 0) {
-//            if(currentLocationY - targetLocationX > 0)  TopLeft(mapa, boats);
-//            else if (currentLocationY - targetLocationY < 0) BotLeft(mapa, boats);
+//        if(currentLocationX - targetLocation.x > 0) {
+//            if(currentLocationY - targetLocation.x > 0)  TopLeft(mapa, boats);
+//            else if (currentLocationY - targetLocation.y < 0) BotLeft(mapa, boats);
 //            else Left(mapa, boats);
 //        }
-//        else if (currentLocationX - targetLocationX < 0) {
-//            if(currentLocationY - targetLocationY > 0)  TopRight(mapa, boats);
-//            else if (currentLocationY - targetLocationY  < 0) BotRight(mapa, boats);
+//        else if (currentLocationX - targetLocation.x < 0) {
+//            if(currentLocationY - targetLocation.y > 0)  TopRight(mapa, boats);
+//            else if (currentLocationY - targetLocation.y  < 0) BotRight(mapa, boats);
 //            else Right(mapa, boats);
 //        }
 //        else {
-//            if(currentLocationY - targetLocationY  > 0)  Up(mapa, boats);
+//            if(currentLocationY - targetLocation.y  > 0)  Up(mapa, boats);
 //            else Down(mapa, boats);
-//        }
 //        }
     }
 

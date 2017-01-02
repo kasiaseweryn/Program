@@ -59,7 +59,7 @@ public class Fleet {
                     if (distanceC(j.x, building.x, j.y, building.y) < min){
                         noColision = true;
                         for (Target t:targets) {
-                            if (distanceC(t.target.x, j.x, t.target.y, j.y) < length*2){
+                            if (distanceC(t.target.x, j.x, t.target.y, j.y) < length*2.5){
                                 noColision = false;
                             }
                         }

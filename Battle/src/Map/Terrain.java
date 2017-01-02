@@ -14,7 +14,7 @@ public class Terrain {
     public int numCols;
 //  public static final int PREFERRED_GRID_SIZE_PIXELS = 1;  may be useful in future
     // Grid of terrain
-    public Color[][] terrainGrid;
+    Color[][] terrainGrid;
     public ArrayList<Point> coastH;
     public ArrayList<Point> coastP;
 
@@ -41,16 +41,20 @@ public class Terrain {
             int y = r.nextInt(numCols);
             px[i] = x;
             py[i] = y;
-            if (x > (0.1* numRows) && x < (0.4* numRows) && y > (0.1* numCols) && y < (0.4* numCols) ) {
+            // City
+            if (distanceC(numRows*0.25, x, numCols*0.25, y) < numCols*0.16 ) {
                 color[i] = Colors.CITY;
             }
-            else if ((distanceC(numRows,x,numCols,y) < numCols/3.5)) {
+            // Viking island
+            else if ((distanceC(numRows,x,numCols,y) < numCols/4)) {
                 color[i] = Colors.HILLS;
                 }
-            else if ((x > (0.7* numRows) && x < (numRows)) || (y > (0.7* numCols) && y < (numCols)) ) {
-                color[i] = Colors.OCEAN;
+            // Main island
+            else if (distanceC(0, x, 0, y) < numCols*0.8 ) {
+                color[i] = Colors.PLAINS;
             }
-            else color[i] = Colors.PLAINS;
+            // Ocean
+            else color[i] = Colors.OCEAN;
         }
 
         // Generate terrain

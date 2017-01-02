@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class Village {
     public ArrayList<Building> buildings;
-    public int[] center;
+    private int[] center;
 
     // Constructor
     public Village(Terrain map) {

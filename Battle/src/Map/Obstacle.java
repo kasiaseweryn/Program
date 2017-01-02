@@ -4,6 +4,7 @@ import Schemes.Colors;
 
 import java.awt.*;
 
+// May not be implemented
 public class Obstacle {
 
     private int x, y, width, height;
