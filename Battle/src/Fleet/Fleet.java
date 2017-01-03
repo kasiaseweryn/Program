@@ -1,6 +1,8 @@
 package Fleet;
 
 import Map.*;
+import Schemes.Colors;
+
 import static Colision.Distance.*;
 
 import java.awt.*;
@@ -33,8 +35,33 @@ public class Fleet {
         boolean noColision;
 
         for (int i = 0; i < size; i++) {  // toDo better x and y
-            x = coastH.get(i).x - width;
-            y = coastH.get(i).y - length;
+            x = coastH.get(i).x;
+            y = coastH.get(i).y;
+            noColision = false;
+
+            // distacne from coast
+            double[] divider = {1.8,1.5,1,0.8,0.5,0.1};
+            int tx, ty;
+            Point temp = new Point(x,y);
+
+            for (int k = 0; k < divider.length; k++) {
+                int[] cx = {0, (int) (length / divider[k]), (int) (length / divider[k])};
+                int[] cy = {(int) (length / divider[k]), 0, (int) (length / divider[k])};
+                for (int l = 0; l < 3; l++) {
+                    tx = temp.x - cx[l];
+                    ty = temp.y - cy[l];
+                    if (tx > 0 && ty > 0 && tx + length/1.8 < map.numRows && ty + length/1.8 < map.numCols)
+                        if (map.terrainGrid[(int) (tx + length / 1.8)][ty] == Colors.OCEAN && map.terrainGrid[tx][(int) (ty + length /1.8)] == Colors.OCEAN) {
+                            x = tx;
+                            y = ty;
+                            noColision = true;
+                        }
+                    if (noColision) break;
+                }
+                if (noColision) break;
+            }
+
+            // distance from boats
             noColision = true;
             for (Boat j : boats) {
                 double distance = distanceC((x + (width / 2)), (j.currentLocation.x + (j.width / 2)), (y + (length / 2)), (j.currentLocation.y + (j.length / 2)));
@@ -43,7 +70,7 @@ public class Fleet {
                 }
             }
             if (noColision && generated < amount) {
-                boats.add(new Boat(x, y, width, length, 5, coastH, coastP));
+                boats.add(new Boat(x, y, width, length, 5));
                 generated++;
             }
         }
@@ -57,6 +84,7 @@ public class Fleet {
                 int min = Integer.MAX_VALUE;
                 for (Point j : coastP) {
                     if (distanceC(j.x, building.x, j.y, building.y) < min){
+                        // distance from boats
                         noColision = true;
                         for (Target t:targets) {
                             if (distanceC(t.target.x, j.x, t.target.y, j.y) < length*2.5){
@@ -77,7 +105,7 @@ public class Fleet {
 
         // Giving boats targets -- temporary function for checking -- may leave it not so bad :)
             for (int i = 0; i < boats.size(); i++) {
-                boats.get(i).target(targets.get(i).target);
+                boats.get(i).target(targets.get(i).target, map);
                 targets.get(i).use();
             }
     }

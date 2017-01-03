@@ -1,12 +1,12 @@
 package Fleet;
 
 import Schemes.*;
-import Army.Warior;
+import Army.*;
 import Map.Terrain;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.Random;
 
 import static Colision.Distance.*;
 import static java.lang.Math.abs;
@@ -18,40 +18,43 @@ public class Boat {
     public Point currentLocation;
     private Point previousLocation;
     public Point targetLocation;
-    private ArrayList<Point> coastH;
-    private ArrayList<Point> coastP;
     private int vector;
     public int width;
     public int length;
     public int state;  //0-have space, 1-full
 
-    public Boat(int x , int y, int width, int length, int size, ArrayList<Point> coastH, ArrayList<Point> coastP){
+    public Boat(int x , int y, int width, int length, int size){
         this.size = size;
         this.seats = new ArrayList<>();
         this.startLocation = new Point(x,y);
         this.targetLocation = new Point(x,y);
         this.previousLocation = new Point(x,y);
         this.currentLocation = new Point(x,y);
-        this.coastH = coastH;
-        this.coastP = coastP;
         this.vector = Vectors.UP;
         this.width = width;
         this.length = length;
         this.state = 0;
     }
 
-    public void target(Point target) {   // toDo target without colision with land
-//        for (int i = target.x; ; i++){
-//            for (int j = target.y; ; j++){
-//                if(){
-//                    targetLocation.x = i;
-//                    targetLocation.y = j;
-//                }
-//            }
-//        }
-        targetLocation.x = target.x + length;
-        targetLocation.y = target.y + length;
-        this.vector();
+    public void target(Point target, Terrain map) {   // toDo better but still my be better
+        double[] divider = {1.8,1.5,1,0.8,0.5};
+        int tx, ty;
+        for (int i = 0; i < divider.length; i++) {
+            int[] x = {0, (int) (length / divider[i]), (int) (length / divider[i])};
+            int[] y = {(int) (length / divider[i]), 0, (int) (length / divider[i])};
+            for (int j = 0; j < 3; j++) {
+                tx = target.x + x[j];
+                ty = target.y + y[j];
+                if (tx - length/1.8 > 0 && ty-length/1.8 > 0 && tx < map.numRows && ty < map.numCols)
+                    if (map.terrainGrid[(int) (tx - length / 1.8)][ty] == Colors.OCEAN && map.terrainGrid[tx][(int) (ty - length /1.8)] == Colors.OCEAN) {
+                            targetLocation.x = tx;
+                            targetLocation.y = ty;
+                            this.vector();
+                            return;
+                    }
+            }
+        }
+        return;
     }
 
     public void clearTarget(){
@@ -150,8 +153,8 @@ public class Boat {
 
     private boolean checkM(Terrain map){
         if(currentLocation.x == previousLocation.x && currentLocation.y == previousLocation.y) return false;
-        if(currentLocation.x < map.numRows*0.015 || currentLocation.y < map.numCols*0.015 || currentLocation.x > map.numRows*0.985 || currentLocation.y > map.numCols*0.985) return false;
-        if(map.terrainGrid[currentLocation.x-length/3][currentLocation.y-length/3] != Colors.OCEAN) return false; //toDo
+        if(currentLocation.x < map.numRows*0.02 || currentLocation.y < map.numCols*0.02 || currentLocation.x > map.numRows*0.98 || currentLocation.y > map.numCols*0.98) return false;
+        if(map.terrainGrid[(int) (currentLocation.x-length/3.4)][(int) (currentLocation.y-length/3.4)] != Colors.OCEAN) return false; //toDo
         return true;
 
     }
