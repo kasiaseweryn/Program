@@ -19,7 +19,7 @@ public class Fleet {
         Random r = new Random();
         int width = map.numCols / 150;
         int length = 5 * map.numRows / 150;
-        int amount = village.buildings.size() * 2;
+        int amount = village.buildings.size()*2;
         int generated = 0;
 
         // Initialazing
@@ -32,7 +32,7 @@ public class Fleet {
         int size = coastH.size(), x, y;
         boolean noColision;
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {  // toDo better x and y
             x = coastH.get(i).x - width;
             y = coastH.get(i).y - length;
             noColision = true;
@@ -75,7 +75,7 @@ public class Fleet {
             }
         }
 
-        // Giving boats targets -- temporary function for checking
+        // Giving boats targets -- temporary function for checking -- may leave it not so bad :)
             for (int i = 0; i < boats.size(); i++) {
                 boats.get(i).target(targets.get(i).target);
                 targets.get(i).use();

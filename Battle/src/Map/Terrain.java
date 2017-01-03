@@ -14,7 +14,7 @@ public class Terrain {
     public int numCols;
 //  public static final int PREFERRED_GRID_SIZE_PIXELS = 1;  may be useful in future
     // Grid of terrain
-    Color[][] terrainGrid;
+    public Color[][] terrainGrid;
     public ArrayList<Point> coastH;
     public ArrayList<Point> coastP;
 

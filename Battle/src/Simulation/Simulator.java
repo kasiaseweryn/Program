@@ -6,8 +6,8 @@ public class Simulator {
 
     public static void main(String[] args) throws InterruptedException {
         //Size od map - based on this everything is generated
-        final int size = 900;
-        final int seeds = 300;
+        final int size = 600;
+        final int seeds = 600;
 
         final JFrame frame = new JFrame("Map");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
