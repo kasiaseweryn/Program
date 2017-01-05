@@ -12,11 +12,10 @@ public class Terrain {
     private int seeds;
     public int numRows;
     public int numCols;
-//  public static final int PREFERRED_GRID_SIZE_PIXELS = 1;  may be useful in future
     // Grid of terrain
-    public Color[][] terrainGrid;
-    public ArrayList<Point> coastH;
-    public ArrayList<Point> coastP;
+    private Color[][] terrainGrid;
+    private ArrayList<Point> coastH;
+    private ArrayList<Point> coastP;
 
     // Constructor
     public Terrain(int rows, int cols, int seed){
@@ -103,5 +102,17 @@ public class Terrain {
         for (Point i:coastH) g.fillRect(i.x, i.y, 1, 1);
         g.setColor(Color.ORANGE);
         for (Point i:coastP) g.fillRect(i.x, i.y, 1, 1);
+    }
+
+    public Color[][] getTerrainGrid() {
+        return terrainGrid;
+    }
+
+    public ArrayList<Point> getCoastH() {
+        return coastH;
+    }
+
+    public ArrayList<Point> getCoastP() {
+        return coastP;
     }
 }

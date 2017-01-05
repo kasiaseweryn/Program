@@ -7,12 +7,12 @@ public class Simulator {
     public static void main(String[] args) throws InterruptedException {
         //Size od map - based on this everything is generated
         final int size = 700;
-        final int seeds = 700;
+        final int seeds = 800;
 
         final JFrame frame = new JFrame("Map");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Screen screen = new Screen(size, size, seeds);
-        frame.setSize(size+20, size+35);
+        frame.setSize(size+10, size+35);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -24,8 +24,8 @@ public class Simulator {
         frame.getContentPane().repaint();
 
         for (int i = 0; i < 2000; i++) {
-            for(int j = 0; j < screen.fleet.boats.size(); j++){
-                screen.fleet.boats.get(j).move(screen.mapa, screen.fleet.boats);
+            for(int j = 0; j < screen.fleet.getBoats().size(); j++){
+                screen.fleet.getBoats().get(j).move();
             }
             Thread.sleep(900/size);
             frame.getContentPane().validate();

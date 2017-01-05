@@ -22,13 +22,11 @@ public class Screen extends JPanel {
         // Generate map and agents
         mapa = new Terrain(rows,cols,seeds);
         village = new Village(mapa);
-        base = new Building(new Point(850,850),40,40,0);
+        base = new Building(new Point((int)(rows*0.9), (int)(cols*0.9)),rows/20,cols/20,0);
 //        obstacles = new ArrayList<Obstacle>();
         fleet = new Fleet(mapa, village);
-//        fleet.setTargetLocation(mapa, village);
-//        vikings = new Vikings(???);
-//        villagers = new Villagers(???);
-        setIgnoreRepaint(true);
+        vikings = new Vikings(mapa, village, fleet, base);
+        villagers = new Villagers(mapa ,village, village.getCenter());
     }
 
     @Override
@@ -38,6 +36,7 @@ public class Screen extends JPanel {
         mapa.draw(g);
         village.draw(g);
         base.draw(g);
+//        obstacles.draw(g);
         fleet.draw(g);
 //        vikings.draw(g);
 //        villagers.draw(g);

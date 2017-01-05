@@ -8,7 +8,7 @@ import java.util.Random;
 public class Building  {
 
     private int width, height, loot, rotation;
-    public Point location;
+    private Point location;
 
     public Building (Point location, int width, int height, int loot) {
         Random r = new Random();
@@ -40,5 +40,9 @@ public class Building  {
         g.setColor(Colors.TEXT);
         g.drawString(String.valueOf(this.loot), location.x, location.y);
 
+    }
+
+    public Point getLocation() {
+        return location;
     }
 }

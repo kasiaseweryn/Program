@@ -18,5 +18,5 @@ public class Colors {
     public static final Color SHIELD = new Color(200,100,0);
     public static final Color BOAT = new Color(200,200,100); //what color should boat have
     public static final Color TEXT = new Color(0,0,0);
-    public static final Color LOCATION = new Color(150,180,250);
+    public static final Color LOCATION = new Color(250,180,250);
 }

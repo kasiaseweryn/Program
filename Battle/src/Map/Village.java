@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Village {
-    public ArrayList<Building> buildings;
-    private int[] center;
+    private ArrayList<Building> buildings;
+    private Point center;
 
     // Constructor
     public Village(Terrain map) {
@@ -24,16 +24,16 @@ public class Village {
 
         //Initializing
         buildings = new ArrayList<>();
-        center = new int[] {0, 0};
+        center = new Point(0,0);
 
         // Genereating village
         for (int i = 0; i < map.numRows; i++) {
             for (int j = 0; j < map.numCols; j++) {
-                if (map.terrainGrid[i][j] == Colors.CITY && i > border && j > border) {
+                if (map.getTerrainGrid()[i][j] == Colors.CITY && i > border && j > border) {
                     inBound = true;
                     for (int x = i - border; x < i + border + size; x++) {
                         for (int y = j - border; y < j + border + size; y++) {
-                            if (map.terrainGrid[x][y] != Colors.CITY) inBound = false;
+                            if (map.getTerrainGrid()[x][y] != Colors.CITY) inBound = false;
                         }
                     }
                     if (inBound) {
@@ -47,17 +47,26 @@ public class Village {
 
         // Generating center
         for (int i = 0; i < buildings.size(); i ++){
-            center[0] += buildings.get(i).location.x + size/2;
-            center[1] += buildings.get(i).location.y + size/2;
+            center.x += buildings.get(i).getLocation().x + size/2;
+            center.y += buildings.get(i).getLocation().y + size/2;
         }
-        center[0] = center[0]/buildings.size();
-        center[1] = center[1]/buildings.size();
+        center.x = center.x/buildings.size();
+        center.y = center.y/buildings.size();
     }
 
     // Drawing
     public void draw(Graphics g) {
         for (Building i:buildings) i.draw(g);
         g.setColor(Color.BLUE);
-        g.drawOval(center[0] - 6, center[1] - 6, 6, 6);
+        g.drawOval(center.x - 3, center.y - 3, 6, 6);
+        g.fillOval(center.x, center.y, 1, 1);
+    }
+
+    public ArrayList<Building> getBuildings() {
+        return buildings;
+    }
+
+    public Point getCenter() {
+        return center;
     }
 }
