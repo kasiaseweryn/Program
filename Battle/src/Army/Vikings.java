@@ -15,11 +15,8 @@ public class Vikings {
     private Terrain map;
     private Village village;
     private Fleet fleet;
-    private Color color;
 
     public Vikings(Terrain map, Village village, Fleet fleet, Building base){
-        // Variables for generation
-        Random r = new Random();
 
         // Initializing
         this.squads = new ArrayList<>();
@@ -28,13 +25,10 @@ public class Vikings {
         this.map = map;
         this.village = village;
         this.fleet = fleet;
-        this.color = Colors.VIKING;
 
         // Generating squads
-        for (Building i:village.getBuildings()){
-            int size = r.nextInt(3) + 8;
-            squads.add(new SquadVikings(map, village, fleet, i, base.getLocation(), size, color));
-            System.out.println(i.getLocation() + " vikings " + size);
+        for (Building building:village.getBuildings()){
+            squads.add(new SquadVikings(map, village, fleet, building, base.getLocation()));
         }
     }
 

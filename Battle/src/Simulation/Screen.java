@@ -26,7 +26,7 @@ public class Screen extends JPanel {
 //        obstacles = new ArrayList<Obstacle>();
         fleet = new Fleet(mapa, village);
         vikings = new Vikings(mapa, village, fleet, base);
-        villagers = new Villagers(mapa ,village, village.getCenter());
+        villagers = new Villagers(mapa, village);
     }
 
     @Override
@@ -39,6 +39,6 @@ public class Screen extends JPanel {
 //        obstacles.draw(g);
         fleet.draw(g);
 //        vikings.draw(g);
-//        villagers.draw(g);
+        villagers.draw(g);
     }
 }

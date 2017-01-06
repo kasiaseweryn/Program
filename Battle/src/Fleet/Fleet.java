@@ -19,7 +19,7 @@ public class Fleet {
         // Variables for generating
         int number = 2;                                         // number of boats per building
         int width = map.numCols / 150;                          // width of a boat
-        int length = 5 * map.numRows / 150;                     // length of a boat/number of seats -- now 5
+        int length = 5 * map.numCols / 150;                     // length of a boat/number of seats -- now 5
         int amount = village.getBuildings().size() * number;    // amount of boats
 
         // Initialazing
@@ -40,7 +40,7 @@ public class Fleet {
 
             // distacne from coast
             int tx, ty;                                         //temporary variable for location
-            double interval = 1.7;
+            double interval = 1.8;
 
             for (double k = 1.8; k > 0.4 ; k -= 0.1) {
                 int[] x = {(int) (length / k), 0, (int) (length / k), (int) (length / k / 2), (int) (length / k / 2), (int) (length / k)};
@@ -129,6 +129,6 @@ public class Fleet {
     // Drawing
     public void draw(Graphics g){
         for (Boat i:boats) i.draw(g);
-        for (Target i:targets) i .draw(g);
+        for (Target i:targets) i.draw(g);
     }
 }

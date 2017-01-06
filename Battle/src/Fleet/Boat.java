@@ -15,7 +15,7 @@ import static java.lang.Math.atan2;
 public class Boat {
     private int size;
     private int speed;
-    private ArrayList<Warrior> seats;
+    private ArrayList<Viking> seats;
     private Point startLocation;
     private Point currentLocation;
     private Point previousLocation;
@@ -77,14 +77,14 @@ public class Boat {
         targetLocation.y = currentLocation.y;
     }
 
-    public void addWarior(Warrior warrior){
+    public void addWarior(Viking warrior){
         if (state == 0) {
             seats.add(warrior);
             if (size == seats.size()) state = 1;
         }
     }
 
-    public void removeWarior(Warrior warrior){
+    public void removeWarior(Viking warrior){
         if (seats.size() > 0) {
             seats.remove(warrior);
             state = 0;

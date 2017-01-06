@@ -6,7 +6,6 @@ import java.awt.*;
 import java.util.Random;
 
 public class Building  {
-
     private int width, height, loot, rotation;
     private Point location;
 
@@ -35,7 +34,7 @@ public class Building  {
         g2d.fillRect(location.x - width/2, location.y - height/2, width, height);
         // Center
         g2d.setColor(Colors.LOCATION);
-        g2d.fillRect(location.x, location.y, 1, 1);
+        g2d.fillOval(location.x-2, location.y-2, 4, 4);
         // Loot
         g.setColor(Colors.TEXT);
         g.drawString(String.valueOf(this.loot), location.x, location.y);
@@ -44,5 +43,13 @@ public class Building  {
 
     public Point getLocation() {
         return location;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

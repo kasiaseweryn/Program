@@ -13,11 +13,8 @@ public class Villagers {
         private int state;  //0-loss, 1-win, 2-fight
         private Terrain map;
         private Village village;
-        private Color color;
 
-        public Villagers(Terrain map, Village village, Point center){
-                // Variables for generation
-                Random r = new Random();
+        public Villagers(Terrain map, Village village){
 
                 // Initializing
                 this.squads = new ArrayList<>();
@@ -25,13 +22,10 @@ public class Villagers {
                 this.state = 2;
                 this.map = map;
                 this.village = village;
-                this.color = Colors.VILLAGER;
 
                 // Generating squads
                 for (Building i:village.getBuildings()){
-                        int size = r.nextInt(3) + 8;
-                        squads.add(new SquadVillagers(map, village, i, center, size, color));
-                        System.out.println(i.getLocation() + " villagers " + size);
+                        squads.add(new SquadVillagers(map, village, i));
                 }
         }
 

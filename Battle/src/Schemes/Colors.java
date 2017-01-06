@@ -14,9 +14,11 @@ public class Colors {
     public static final Color OBSTACLES = new Color(70,70,70);
     public static final Color WEAPON = new Color(100,40,70);
     public static final Color VIKING = new Color(0,0,200);
+    public static final Color VIKING_LEADER = new Color(0,0,150);
     public static final Color VILLAGER = new Color(200,0,0);
+    public static final Color VILLAGER_LEADER = new Color(150,0,0);
     public static final Color SHIELD = new Color(200,100,0);
-    public static final Color BOAT = new Color(200,200,100); //what color should boat have
+    public static final Color BOAT = new Color(50,20,10); //what color should boat have
     public static final Color TEXT = new Color(0,0,0);
     public static final Color LOCATION = new Color(250,180,250);
 }
