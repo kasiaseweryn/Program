@@ -40,12 +40,12 @@ public class Villager {
         // Initializing
         this.map = map;
         this.village = village;
-        this.currentLocation = location;
-        this.previousLocation = location;
+        this.currentLocation = new Point(location);
+        this.previousLocation = new Point(location);
         this.targetLocation = target;
         this.targetEnemy = new Viking();
         this.loot = 0;
-        this.size = map.numCols/175;
+        this.size = map.numCols/150;
         this.speed = new Point(1,1);
         this.thrownWeapon = r.nextInt(6) + 5;
         this.vector = 0;
@@ -67,8 +67,11 @@ public class Villager {
 
 
     public void draw(Graphics g) {
-        g.setColor(color);
-        g.fillOval(currentLocation.x - size/2, currentLocation.y - size/2, size, size);
+        Graphics2D g2d = (Graphics2D) g.create();
+        // Villager
+        g2d.setColor(color);
+        g2d.rotate(Math.toRadians(vector), currentLocation.x, currentLocation.y);
+        g2d.fillOval(currentLocation.x - size/2, currentLocation.y - size/2, size, size);
     }
 
     public Point getCurrentLocation() {
@@ -77,9 +80,5 @@ public class Villager {
 
     public int getSize() {
         return size;
-    }
-
-    public Color getColor() {
-        return color;
     }
 }

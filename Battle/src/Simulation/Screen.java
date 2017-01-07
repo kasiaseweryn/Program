@@ -40,5 +40,6 @@ public class Screen extends JPanel {
         fleet.draw(g);
 //        vikings.draw(g);
         villagers.draw(g);
+        
     }
 }

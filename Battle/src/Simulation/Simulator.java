@@ -23,13 +23,13 @@ public class Simulator {
         frame.getContentPane().validate();
         frame.getContentPane().repaint();
 
-        for (int i = 0; i < 2000; i++) {
-            for(int j = 0; j < screen.fleet.getBoats().size(); j++){
-                screen.fleet.getBoats().get(j).move();
-            }
-            Thread.sleep(900/size);
-            frame.getContentPane().validate();
-            frame.getContentPane().repaint();
-        }
+//        for (int i = 0; i < 2000; i++) {
+//            for(int j = 0; j < screen.fleet.getBoats().size(); j++){
+//                screen.fleet.getBoats().get(j).move();
+//            }
+//            Thread.sleep(900/size);
+//            frame.getContentPane().validate();
+//            frame.getContentPane().repaint();
+//        }
     }
 }

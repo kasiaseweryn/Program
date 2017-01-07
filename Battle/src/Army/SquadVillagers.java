@@ -26,7 +26,7 @@ public class SquadVillagers {
         boolean generated, noColision;
         Point location = new Point();
         Color color;
-        int size = map.numCols/175;
+        int size = map.numCols/150;
         double angle = 0;
         double radius = sqrt((target.getWidth()*target.getWidth()) + target.getHeight()*target.getHeight())/2 + size;
 
@@ -40,19 +40,18 @@ public class SquadVillagers {
         // Generating squad
         for (int i = 0; i < this.size; i++){
             generated = false;
-            noColision = true;
-            while (!generated){
+            while (!generated) {
                 // generating random point in radius of a building
-                angle += 6.28/this.size;
-                location.x = target.getLocation().x + (int)(radius * cos(angle));
-                location.y = target.getLocation().y + (int)(radius * sin(angle));
+                angle += 6.28 / this.size;
+                location.x = target.getLocation().x + (int) (radius * cos(angle));
+                location.y = target.getLocation().y + (int) (radius * sin(angle));
 
-                // checkimg for villagers -- emmmm something is bad
-//                noColision = true;
+                // checking for villagers
+                noColision = true;
 //                double spread = 1.1;
 //
 //                for (Villager j : villagers) {
-//                    double distance = distanceC(location.x, j.getCurrentLocation().x, location.y, j.getCurrentLocation().y); //toDO problem with location always 0 distance why why why?
+//                    double distance = distanceC(location.x, j.getCurrentLocation().x, location.y, j.getCurrentLocation().y); //toDO get whole army not only squad
 //                    System.out.println(j.getCurrentLocation().x + ":" + j.getCurrentLocation().y);
 //                    if (distance < size * spread) {
 //                        noColision = false;
@@ -64,22 +63,14 @@ public class SquadVillagers {
                     if (villagers.size() == 0) color = Colors.VILLAGER_LEADER;
                     else color = Colors.VILLAGER;
                     villagers.add(new Villager(location, map, village, target, color));
-                    System.out.println(location.x + ":" + location.y);
                     generated = true;
                 }
             }
         }
-        System.out.println(villagers.size());
     }
 
     public void draw(Graphics g) {
-        for (Villager i: villagers){
-            g.setColor(i.getColor());
-            g.fillOval(i.getCurrentLocation().x - i.getSize()/2, i.getCurrentLocation().y - i.getSize()/2, i.getSize(), i.getSize());
-        }
-    }
+        for( Villager i : villagers) i.draw(g);
 
-//    public void draw(Graphics g) {
-//        for (Villager i: villagers) i.draw();
-//    }
+    }
 }

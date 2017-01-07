@@ -32,4 +32,8 @@ public class Villagers {
         public void draw(Graphics g){
                 for (SquadVillagers i:squads) i.draw(g);
         }
+
+        public ArrayList<SquadVillagers> getSquads() {
+                return squads;
+        }
 }

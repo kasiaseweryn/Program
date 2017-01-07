@@ -15,7 +15,7 @@ public class Village {
         // Variables for generating
         Random r = new Random();
         int size = map.numCols /30;
-        int border = map.numCols /45;
+        int border = map.numCols /38;
         int max1 = map.numRows /17;
         int min1 = map.numRows /27;
         int max2 = map.numCols /20;
