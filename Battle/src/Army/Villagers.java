@@ -13,6 +13,7 @@ public class Villagers {
         private int state;  //0-loss, 1-win, 2-fight
         private Terrain map;
         private Village village;
+        private Vikings enemies;
 
         public Villagers(Terrain map, Village village){
 
@@ -25,15 +26,11 @@ public class Villagers {
 
                 // Generating squads
                 for (Building i:village.getBuildings()){
-                        squads.add(new SquadVillagers(map, village, i));
+                        squads.add(new SquadVillagers(map, village, i, squads));
                 }
         }
 
         public void draw(Graphics g){
                 for (SquadVillagers i:squads) i.draw(g);
-        }
-
-        public ArrayList<SquadVillagers> getSquads() {
-                return squads;
         }
 }

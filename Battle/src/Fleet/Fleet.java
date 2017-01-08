@@ -71,7 +71,7 @@ public class Fleet {
             }
             // adding boats
             if (noColision && generated < amount) {
-                boats.add(new Boat(map, location.x, location.y, width, length, 5));
+                boats.add(new Boat(map, location, width, length, 5));
                 generated++;
             }
         }

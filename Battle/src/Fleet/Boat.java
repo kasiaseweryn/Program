@@ -28,14 +28,14 @@ public class Boat {
     private ArrayList<Boat> boats;
     private int state;  //0-have space, 1-full
 
-    public Boat(Terrain map, int x , int y, int width, int length, int size){
+    public Boat(Terrain map, Point location, int width, int length, int size){
         this.size = size;
         this.speed = 1;
         this.seats = new ArrayList<>();
-        this.startLocation = new Point(x,y);
-        this.targetLocation = new Point(x,y);
-        this.previousLocation = new Point(x,y);
-        this.currentLocation = new Point(x,y);
+        this.startLocation = new Point(location);
+        this.targetLocation = new Point(location);
+        this.previousLocation = new Point(location);
+        this.currentLocation = new Point(location);
         this.vector();
         this.width = width;
         this.length = length;

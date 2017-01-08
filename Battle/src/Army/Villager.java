@@ -33,7 +33,7 @@ public class Villager {
     private Terrain map;
     private Village village;
 
-    public Villager(Point location, Terrain map, Village village, Building target, Color color){
+    public Villager(Point location, Terrain map, Village village, Building target, Color color, int size){
         // Variables for generating
         Random r = new Random();
 
@@ -45,7 +45,7 @@ public class Villager {
         this.targetLocation = target;
         this.targetEnemy = new Viking();
         this.loot = 0;
-        this.size = map.numCols/150;
+        this.size = size;
         this.speed = new Point(1,1);
         this.thrownWeapon = r.nextInt(6) + 5;
         this.vector = 0;
