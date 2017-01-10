@@ -9,19 +9,20 @@ import Schemes.Weapons;
 import java.awt.*;
 import java.util.Random;
 
+import static java.lang.Math.toRadians;
+
 public class Villager {
-    private float health;
-    private float moral;
-    private float defense;
-    private float accuracy;
-    private float dodge;
+    private int health;
+    private int moral;
+    private int defense;
+    private int accuracy;
+    private int dodge;
     private Point speed;
     private Point currentLocation;
     private Point previousLocation;
     private Building targetLocation;
     private Viking targetEnemy;
     private Weapon primeWeapon;
-    private int thrownWeapon;
     private int vector;
     private boolean shield;
     private int shieldDirection;
@@ -47,17 +48,18 @@ public class Villager {
         this.loot = 0;
         this.size = size;
         this.speed = new Point(1,1);
-        this.thrownWeapon = r.nextInt(6) + 5;
         this.vector = 0;
-        this.shield = false;
+        this.shield = true;
         this.shieldDirection = -90;
         this.inCover = false;
         this.state = 1;
         this.health = 100;
         this.color = color;
 
-        this.moral = r.nextInt(21)+40;
-        this.defense = r.nextInt(4)+3;
+        this.dodge = r.nextInt(11) + 10;
+        this.accuracy = r.nextInt(21) + 50;
+        this.moral = r.nextInt(21) + 40;
+        this.defense = r.nextInt(3) + 2;
         this.primeWeapon = Weapons.ARSENAL[r.nextInt(Weapons.ARSENAL.length)];
     }
 
@@ -65,13 +67,23 @@ public class Villager {
 
     }
 
-
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
         // Villager
         g2d.setColor(color);
-        g2d.rotate(Math.toRadians(vector), currentLocation.x, currentLocation.y);
+        g2d.rotate(toRadians(vector), currentLocation.x, currentLocation.y);
         g2d.fillOval(currentLocation.x - size/2, currentLocation.y - size/2, size, size);
+        // Center
+        g2d.setColor(Colors.LOCATION);
+        g2d.fillRect(currentLocation.x, currentLocation.y, 1, 1);
+        // Weapon
+        g2d.setColor(Colors.WEAPON);
+        g2d.rotate(toRadians(90), currentLocation.x, currentLocation.y);
+        g2d.fillRect((int) (currentLocation.x - size/1.4), (int) (currentLocation.y - size/1.8), (int) (size/1.1), size/5);
+        // Shield
+        g2d.setColor(Colors.SHIELD);
+        g2d.rotate(toRadians(shieldDirection - 90 - vector), currentLocation.x, currentLocation.y);
+        g2d.fillRect(currentLocation.x - size/4, currentLocation.y - size/2, size/2, size/4);
     }
 
     public Point getCurrentLocation() {

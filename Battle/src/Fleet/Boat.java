@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import static Colision.Distance.*;
 import static java.lang.Math.PI;
 import static java.lang.Math.atan2;
+import static java.lang.Math.toRadians;
 
 public class Boat {
     private int size;
@@ -325,7 +326,7 @@ public class Boat {
         Graphics2D g2d = (Graphics2D) g.create();
         // Boat
         g2d.setColor(Colors.BOAT);
-        g2d.rotate(Math.toRadians(vector), currentLocation.x, currentLocation.y);
+        g2d.rotate(toRadians(vector), currentLocation.x, currentLocation.y);
         g2d.fillRect(currentLocation.x - width/2, currentLocation.y - length/2, width, length);
         // Center
         g.setColor(Colors.LOCATION);

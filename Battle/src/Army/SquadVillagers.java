@@ -28,7 +28,7 @@ public class SquadVillagers {
         boolean generated, noColision;
         Point location = new Point();
         Color color;
-        int size = map.numCols/130;
+        int size = map.numCols/120;
         double radius = sqrt((target.getWidth()*target.getWidth()) + target.getHeight()*target.getHeight())/2 + size;
 
         // Initializing
@@ -76,7 +76,6 @@ public class SquadVillagers {
                 }
             }
         }
-        System.out.println(allies.size());
     }
 
     public void draw(Graphics g) {
@@ -87,4 +86,7 @@ public class SquadVillagers {
         this.enemies = enemies;
     }
 
+    public ArrayList<SquadVillagers> getAllies() {
+        return allies;
+    }
 }

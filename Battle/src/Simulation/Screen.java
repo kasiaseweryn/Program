@@ -6,6 +6,9 @@ import java.awt.*;
 import Army.*;
 import Fleet.*;
 import Map.*;
+import Schemes.Colors;
+
+import static java.lang.Math.toRadians;
 
 public class Screen extends JPanel {
 
@@ -27,6 +30,8 @@ public class Screen extends JPanel {
         fleet = new Fleet(mapa, village);
         vikings = new Vikings(mapa, village, fleet, base);
         villagers = new Villagers(mapa, village);
+        vikings.setEnemies(villagers.getSquads());
+        villagers.setEnemies(vikings.getSquads());
     }
 
     @Override
@@ -38,8 +43,7 @@ public class Screen extends JPanel {
         base.draw(g);
 //        obstacles.draw(g);
         fleet.draw(g);
-//        vikings.draw(g);
+        vikings.draw(g);
         villagers.draw(g);
-        
     }
 }
