@@ -50,7 +50,7 @@ public class Villager {
         this.speed = new Point(1,1);
         this.vector = 0;
         this.shield = true;
-        this.shieldDirection = -90;
+        this.shieldDirection = - (r.nextInt(61) + 30);
         this.inCover = false;
         this.state = 1;
         this.health = 100;

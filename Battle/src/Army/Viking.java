@@ -51,7 +51,7 @@ public class Viking {
         this.thrownWeapon = r.nextInt(6) + 5;
         this.vector = 0;
         this.shield = false;
-        this.shieldDirection = -90;
+        this.shieldDirection = - (r.nextInt(61) + 30);
         this.inCover = false;
         this.state = 1;
         this.health = 100;
