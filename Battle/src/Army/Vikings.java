@@ -2,11 +2,9 @@ package Army;
 
 import Fleet.Fleet;
 import Map.*;
-import Schemes.Colors;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 import static java.lang.Math.*;
 

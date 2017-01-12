@@ -1,34 +1,47 @@
 package Army;
 
 import Map.*;
-import Schemes.Colors;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Villagers {
     private ArrayList<SquadVillagers> squads;
-    private Village village;
     private int state;  //0-loss, 1-win, 2-fight
+
+    private Village village;
     private Terrain map;
+
     private ArrayList<SquadVikings> enemies;
 
     public Villagers(Terrain map, Village village){
         // Initializing
         this.squads = new ArrayList<>();
-        this.village = village;
         this.state = 2;
+
+        this.village = village;
         this.map = map;
 
         // Generating squads
         for (Building i:village.getBuildings()){
             squads.add(new SquadVillagers(map, village, i, squads));
         }
-
     }
 
-    // Estimating and setting state
+    // Setters
+    public void setEnemies(ArrayList<SquadVikings> enemies) {
+        this.enemies = enemies;
+        for (SquadVillagers i:squads){
+            i.setEnemies(enemies);
+        }
+    }
+
+    // Getters
+    public ArrayList<SquadVillagers> getSquads() {
+        return squads;
+    }
+
+    // OTHER FUNCTIONS
     public void estimateState(){
         // Update state of squads
         for (SquadVillagers i : squads) i.estimateState();
@@ -69,20 +82,8 @@ public class Villagers {
         }
     }
 
-        // Setters
-        public void setEnemies(ArrayList<SquadVikings> enemies) {
-            this.enemies = enemies;
-            for (SquadVillagers i:squads){
-                i.setEnemies(enemies);
-            }
-        }
-
-        // Getters
-        public ArrayList<SquadVillagers> getSquads() {
-            return squads;
-        }
-
-        public void draw(Graphics g){
-            for (SquadVillagers i:squads) i.draw(g);
-        }
+    // Drawing
+    public void draw(Graphics g){
+        for (SquadVillagers i:squads) i.draw(g);
+    }
 }

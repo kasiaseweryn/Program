@@ -9,6 +9,7 @@ import Schemes.Colors;
 import Schemes.Weapons;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 import static java.lang.Math.PI;
@@ -16,60 +17,93 @@ import static java.lang.Math.atan2;
 import static java.lang.Math.toRadians;
 
 public class Villager {
+    // Stats for battle
     private int health;
     private int moral;
     private int defense;
     private int accuracy;
     private int dodge;
+    private int loot;
+    private int state;
+
+    // Stats for locations and targets
     private Point speed;
     private Point currentLocation;
     private Point previousLocation;
     private Building targetLocation;
     private Viking targetEnemy;
-    private Weapon primeWeapon;
     private int vector;
+
+    // Stats for armament
+    private Weapon primeWeapon;
     private Shield shield;
     private int shieldDirection;
-    private int loot;
-    private int state;
+
+    // Drawing
     private int size;
     private Color color;
+
+    // Map information
     private Terrain map;
     private Village village;
 
-    public Villager(Point location, Terrain map, Village village, Building target, Color color, int size){
-        // Variables for generating
-        Random r = new Random();
+    // Other agents
+    private ArrayList<SquadVillagers> allies;
+    private ArrayList<SquadVikings> enemies;
 
-        // Initializing
-        this.map = map;
-        this.village = village;
+    public Villager(Point location, Terrain map, Village village, Building targetLocation, Color color, int size, ArrayList<SquadVillagers> allies){
+        Random r = new Random();
+        // Stats for battle
+        this.health = 100;
+        this.moral = r.nextInt(21) + 40;
+        this.defense = r.nextInt(4) + 2;
+        this.accuracy = r.nextInt(31) + 30;
+        this.dodge = r.nextInt(11) + 10;
+        this.loot = 0;
+        this.state = 1;
+
+        // Stats for locations and targets
+        this.speed = new Point(1,1);
         this.currentLocation = new Point(location);
         this.previousLocation = new Point(location);
-        this.targetLocation = target;
+        this.targetLocation = targetLocation;
         this.targetEnemy = null;
-        this.loot = 0;
-        this.size = size;
-        this.speed = new Point(1,1);
         this.vector();
+
+        // Stats for armament
+        this.primeWeapon = Weapons.ARSENAL[r.nextInt(Weapons.ARSENAL.length)];
         if ( r.nextInt(101) > 50 ) this.shield = new Shield();
         else this.shield = null;
         this.shieldDirection = - (r.nextInt(61) + 30);
-        this.state = 1;
-        this.health = 100;
+
+        // Drawing
+        this.size = size;
         this.color = color;
 
-        this.dodge = r.nextInt(11) + 10;
-        this.accuracy = r.nextInt(21) + 50;
-        this.moral = r.nextInt(21) + 40;
-        this.defense = r.nextInt(3) + 2;
-        this.primeWeapon = Weapons.ARSENAL[r.nextInt(Weapons.ARSENAL.length)];
+        // Map information
+        this.map = map;
+        this.village = village;
+
+        // Other agents
+        this.allies = allies;
     }
 
+    // Setters
+    public void setEnemies(ArrayList<SquadVikings> enemies) {
+        this.enemies = enemies;
+    }
+
+    // Getters
+    public Point getCurrentLocation() {
+        return currentLocation;
+    }
+
+    // OTHER FUNTIONS
     private void vector(){
         vector = -(int) (atan2(currentLocation.x - targetLocation.getLocation().x, currentLocation.y - targetLocation.getLocation().y)*(180/PI));
     }
 
+    // Drawing
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
         // Villager
@@ -82,11 +116,4 @@ public class Villager {
         if (shield != null) shield.draw(g, currentLocation, size, vector + shieldDirection);
     }
 
-    public Point getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public int getSize() {
-        return size;
-    }
 }

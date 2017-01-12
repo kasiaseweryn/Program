@@ -13,12 +13,17 @@ import static Colision.Distance.distanceC;
 import static java.lang.Math.*;
 
 public class SquadVillagers {
+    // Stats for squad
+    private int size;
     private ArrayList<Villager> villagers;
     private Building target;
     private int state;  //0-all_dead, 1-fight, 2-retreat
-    private int size;
+
+    // Map information
     private Terrain map;
     private Village village;
+
+    // Other agents
     private ArrayList<SquadVikings> enemies;
     private ArrayList<SquadVillagers> allies;
 
@@ -31,12 +36,17 @@ public class SquadVillagers {
         int size = map.numCols/120;
         double radius = sqrt((target.getWidth()*target.getWidth()) + target.getHeight()*target.getHeight())/2 + size;
 
-        // Initializing
+        // Stats for squad
+        this.size = r.nextInt(3) + 8;
+        this.villagers = new ArrayList<>();
+        this.target = target;
+        this.state = 1;
+
+        // Map information
         this.map = map;
         this.village = village;
-        this.target = target;
-        this.villagers = new ArrayList<>();
-        this.size = r.nextInt(3) + 8;
+
+        // Other agents
         this.allies = allies;
 
         // Generating squad
@@ -71,15 +81,28 @@ public class SquadVillagers {
                 if (noColision) {
                     if (villagers.size() == 0) color = Colors.VILLAGER_LEADER;                              // toDo make leader a boss! good stats ect :)
                     else color = Colors.VILLAGER;
-                    villagers.add(new Villager(location, map, village, target, color, size));
+                    villagers.add(new Villager(location, map, village, target, color, size, allies));
                     generated = true;
                 }
             }
         }
     }
 
-    public void estimateState(){
+    // Setters
+    public void setEnemies(ArrayList<SquadVikings> enemies) {
+        this.enemies = enemies;
+        for (Villager i : villagers){
+            i.setEnemies(enemies);
+        }
+    }
 
+    // Getters
+    public int getState() {
+        return state;
+    }
+
+    // OTHER FUNTIONS
+    public void estimateState(){
     }
 
     public void action() {                                  //toDo action functions
@@ -91,16 +114,7 @@ public class SquadVillagers {
     public void surrender() {
     }
 
-    // Setters
-    public void setEnemies(ArrayList<SquadVikings> enemies) {
-        this.enemies = enemies;
-    }
-
-    // Getters
-    public int getState() {
-        return state;
-    }
-
+    // Drawing
     public void draw(Graphics g) {
         for( Villager i : villagers) i.draw(g);
     }
