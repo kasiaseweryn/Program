@@ -13,22 +13,26 @@ import static java.lang.Math.*;
 public class Vikings {
     private ArrayList<SquadVikings> squads;
     private int state;  //0-loss, 1-win, 2-fight
+
     private Terrain map;
     private Village village;
     private Fleet fleet;
+
     private ArrayList<SquadVillagers> enemies;
 
     public Vikings(Terrain map, Village village, Fleet fleet, Building base){
+        // Variables for generating
+        double angle = 2.2;
+        double radius = 1.1 * sqrt((base.getWidth()*base.getWidth()) + base.getHeight()*base.getHeight());
+        Point location = new Point();
 
         // Initializing
         this.squads = new ArrayList<>();
         this.state = 2;
+
         this.map = map;
         this.village = village;
         this.fleet = fleet;
-        double angle = 2.2;
-        double radius = 1.1 * sqrt((base.getWidth()*base.getWidth()) + base.getHeight()*base.getHeight());
-        Point location = new Point();
 
         // Generating squads
         for (Building building:village.getBuildings()){
@@ -39,6 +43,20 @@ public class Vikings {
         }
     }
 
+    // Setters
+    public void setEnemies(ArrayList<SquadVillagers> enemies) {
+        this.enemies = enemies;
+        for (SquadVikings i:squads){
+            i.setEnemies(enemies);
+        }
+    }
+
+    // Getters
+    public ArrayList<SquadVikings> getSquads() {
+        return squads;
+    }
+
+    // OTHER FUNCTIONS
     public void estimateState(){
         int lost = 0, looted = 0, defeated = 0;
         // Losing statement
@@ -76,19 +94,7 @@ public class Vikings {
         }
     }
 
-    // Setters
-    public void setEnemies(ArrayList<SquadVillagers> enemies) {
-        this.enemies = enemies;
-        for (SquadVikings i:squads){
-            i.setEnemies(enemies);
-        }
-    }
-
-    // Getters
-    public ArrayList<SquadVikings> getSquads() {
-        return squads;
-    }
-
+    // Drawing
     public void draw(Graphics g){
         for (SquadVikings i:squads) i.draw(g);
     }

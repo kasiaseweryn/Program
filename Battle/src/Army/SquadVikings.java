@@ -12,13 +12,18 @@ import static Colision.Distance.distanceC;
 import static java.lang.Math.*;
 
 public class SquadVikings {
+    // Stats for squad
+    private int size;
     private ArrayList<Viking> vikings;
     private Building target;
     private int state;  //0-all_dead, 1-fight, 2-retreat, 3-looting
-    private int size;
+
+    // Map information
     private Terrain map;
     private Village village;
     private Fleet fleet;
+
+    // Other agents
     private ArrayList <SquadVikings> allies;
     private ArrayList <SquadVillagers> enemies;
 
@@ -30,13 +35,18 @@ public class SquadVikings {
         Color color;
         int size = map.numCols/120;
 
-        // Initializing
+        // Stats for squad
+        this.size = r.nextInt(3) + 8;
+        this.vikings = new ArrayList<>();
+        this.target = target;
+        this.state = 1;
+
+        // Map information
         this.map = map;
         this.village = village;
         this.fleet = fleet;
-        this.target = target;
-        this.vikings = new ArrayList<>();
-        this.size = r.nextInt(3) + 8;
+
+        // Other agents
         this.allies = allies;
 
         // Generating squad
@@ -72,13 +82,27 @@ public class SquadVikings {
                 if (noColision) {
                     if (vikings.size() == 0) color = Colors.VIKING_LEADER;                              // toDo make leader a boss! good stats ect :)
                     else color = Colors.VIKING;
-                    vikings.add(new Viking(location, map, village, fleet, target, color, size));
+                    vikings.add(new Viking(location, map, village, fleet, target, color, size, allies));
                     generated = true;
                 }
             }
         }
     }
 
+    // Setters
+    public void setEnemies(ArrayList<SquadVillagers> enemies) {
+        this.enemies = enemies;
+        for (Viking i : vikings){
+            i.setEnemies(enemies);
+        }
+    }
+
+    // Getters
+    public int getState() {
+        return state;
+    }
+
+    // OTHERS FUNCTIONS
     public void estimateState(){
 
     }
@@ -92,16 +116,7 @@ public class SquadVikings {
     public void surrender() {
     }
 
-    // Setters
-    public void setEnemies(ArrayList<SquadVillagers> enemies) {
-        this.enemies = enemies;
-    }
-
-    // Getters
-    public int getState() {
-        return state;
-    }
-
+    // Drawing
     public void draw(Graphics g) {
         for (Viking i: vikings) i.draw(g);
     }

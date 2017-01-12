@@ -15,6 +15,7 @@ public class DroppedShield {
     }
 
     public void draw(Graphics g){
+        Graphics2D g2d = (Graphics2D) g.create();
 
     }
 }

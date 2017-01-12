@@ -28,7 +28,7 @@ public class Boat {
     private ArrayList<Boat> boats;
     private int state;  //0-have space, 1-full
 
-    public Boat(Terrain map, Point location, int width, int length, int size){
+    public Boat(Terrain map, Point location, int width, int length, int size, ArrayList<Boat> boats){
         this.size = size;
         this.speed = 1;
         this.seats = new ArrayList<>();
@@ -42,6 +42,7 @@ public class Boat {
         this.map = map;
         this.boats = new ArrayList<>();
         this.state = 0;
+        this.boats = boats;
     }
 
     public void setTarget(Target target) {
@@ -61,7 +62,7 @@ public class Boat {
                     noColision = true;
                     double angle2 = 0;
                     while (angle2 < 6.3 && noColision) {
-                        if (map.getTerrainGrid()[tx + (int) (length/2 * cos(angle2))][ty + (int) (length/2 * sin(angle2))] != Colors.OCEAN || map.getTerrainGrid()[tx + (int) (length/4 * cos(angle2))][ty + (int) (length/4 * sin(angle2))] != Colors.OCEAN) {
+                        if (map.getTerrainGrid()[tx + (int) (length/1.9 * cos(angle2))][ty + (int) (length/1.9 * sin(angle2))] != Colors.OCEAN || map.getTerrainGrid()[tx + (int) (length/4 * cos(angle2))][ty + (int) (length/4 * sin(angle2))] != Colors.OCEAN) {
                             noColision = false;
                         }
                         angle2 += 0.3925;
@@ -77,10 +78,6 @@ public class Boat {
             }
         }
         return;
-    }
-
-    public void setBoats(ArrayList<Boat> boats){
-        this.boats = boats;
     }
 
     public void clearTarget(){

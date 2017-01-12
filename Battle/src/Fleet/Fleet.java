@@ -89,14 +89,9 @@ public class Fleet {
 
             // adding boats
             if (noColision && generated < amount) {
-                boats.add(new Boat(map, location, width, length, 5));
+                boats.add(new Boat(map, location, width, length, 5, boats));
                 generated++;
             }
-        }
-
-        // Adding list of boats to every boat
-        for (Boat i : boats){
-            i.setBoats(boats);
         }
 
         // Generating targets for boats
