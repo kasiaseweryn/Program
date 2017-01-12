@@ -1,14 +1,14 @@
 package Schemes;
 
-import Army.Weapon;
+import Armament.Weapon;
 
 public class Weapons {
     //Declaration of weapons   For now values just estimated
-    public static final Weapon SPEAR = new Weapon(10,5,5);
-    public static final Weapon SWORD = new Weapon(5,7,7);
-    public static final Weapon AXE  = new Weapon(3,4,6);
-    public static final Weapon DOUBLE_AXE = new Weapon(4,2,10);
-    public static final Weapon BOW = new Weapon(30,3,3);
+    public static final Weapon SPEAR = new Weapon(2,3,1,3);
+    public static final Weapon SWORD = new Weapon(1,5,2,2);
+    public static final Weapon AXE  = new Weapon(1,5,2,2);
+    public static final Weapon DOUBLE_AXE = new Weapon(2,3,5,3);
+    public static final Weapon BOW = new Weapon(30,7,3,0);
 
     public static final Weapon[] ARSENAL = {
             SPEAR,

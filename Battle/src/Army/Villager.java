@@ -1,5 +1,6 @@
 package Army;
 
+import Armament.Weapon;
 import Map.Building;
 import Map.Terrain;
 import Map.Village;
@@ -48,7 +49,8 @@ public class Villager {
         this.size = size;
         this.speed = new Point(1,1);
         this.vector = 0;
-        this.shield = true;
+        if ( r.nextInt(101) > 50 ) this.shield = true;
+        else this.shield = false;
         this.shieldDirection = - (r.nextInt(61) + 30);
         this.state = 1;
         this.health = 100;
@@ -79,9 +81,11 @@ public class Villager {
         g2d.rotate(toRadians(90), currentLocation.x, currentLocation.y);
         g2d.fillRect((int) (currentLocation.x - size/1.4), (int) (currentLocation.y - size/1.8), (int) (size/1.1), size/5);
         // Shield
-        g2d.setColor(Colors.SHIELD);
-        g2d.rotate(toRadians(shieldDirection - 90 - vector), currentLocation.x, currentLocation.y);
-        g2d.fillRect(currentLocation.x - size/4, currentLocation.y - size/2, size/2, size/4);
+        if (shield) {
+            g2d.setColor(Colors.SHIELD);
+            g2d.rotate(toRadians(shieldDirection - 90 - vector), currentLocation.x, currentLocation.y);
+            g2d.fillRect(currentLocation.x - size / 4, currentLocation.y - size / 2, size / 2, size / 4);
+        }
     }
 
     public Point getCurrentLocation() {

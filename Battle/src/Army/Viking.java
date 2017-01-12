@@ -1,11 +1,14 @@
 package Army;
 
+import Armament.ThrownWeapon;
+import Armament.Weapon;
 import Fleet.Fleet;
 import Map.*;
 import Schemes.Colors;
 import Schemes.Weapons;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 import static java.lang.Math.toRadians;
@@ -22,7 +25,7 @@ public class Viking {
     private Building targetLocation;
     private Villager targetEnemy;
     private Weapon primeWeapon;
-    private int thrownWeapon;
+    private ArrayList<ThrownWeapon> thrownWeapons;
     private int vector;
     private boolean shield;
     private int shieldDirection;
@@ -47,9 +50,11 @@ public class Viking {
         this.loot = 0;
         this.size = size;
         this.speed = new Point(1,1);
-        this.thrownWeapon = r.nextInt(6) + 5;
+        this.thrownWeapons = new ArrayList<>();
+        for (int i = 0; i < r.nextInt(6) + 5; i++) thrownWeapons.add(new ThrownWeapon());
         this.vector = 0;
-        this.shield = false;
+        if ( r.nextInt(101) > 50 ) this.shield = true;
+        else this.shield = false;
         this.shieldDirection = - (r.nextInt(61) + 30);
         this.state = 1;
         this.health = 100;
@@ -83,9 +88,11 @@ public class Viking {
         g2d.rotate(toRadians(90), currentLocation.x, currentLocation.y);
         g2d.fillRect((int) (currentLocation.x - size/1.4), (int) (currentLocation.y - size/1.8), (int) (size/1.1), size/5);
         // Shield
-        g2d.setColor(Colors.SHIELD);
-        g2d.rotate(toRadians(shieldDirection - 90 - vector), currentLocation.x, currentLocation.y);
-        g2d.fillRect(currentLocation.x - size/4, currentLocation.y - size/2, size/2, size/4);
+        if (shield) {
+            g2d.setColor(Colors.SHIELD);
+            g2d.rotate(toRadians(shieldDirection - 90 - vector), currentLocation.x, currentLocation.y);
+            g2d.fillRect(currentLocation.x - size / 4, currentLocation.y - size / 2, size / 2, size / 4);
+        }
     }
 
     public Point getCurrentLocation() {
