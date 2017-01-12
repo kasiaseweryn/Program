@@ -23,11 +23,11 @@ public class Simulator {
         frame.getContentPane().validate();
         frame.getContentPane().repaint();
 
-        for (int i = 0; i < 300; i++) {
-            for(int j = 0; j < screen.fleet.getBoats().size(); j++){
-                screen.fleet.getBoats().get(j).move();
+        for (int i = 0; i < 1000; i++) {
+            for(int j = 0; j < screen.getGenerator().getFleet().getBoats().size(); j++){
+                screen.getGenerator().getFleet().getBoats().get(j).move();
             }
-            Thread.sleep(1000/size);
+            Thread.sleep(1);
             frame.getContentPane().validate();
             frame.getContentPane().repaint();
         }

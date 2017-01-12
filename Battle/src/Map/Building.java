@@ -52,4 +52,8 @@ public class Building  {
     public int getHeight() {
         return height;
     }
+
+    public int getLoot() {
+        return loot;
+    }
 }

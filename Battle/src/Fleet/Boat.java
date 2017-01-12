@@ -9,9 +9,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import static Colision.Distance.*;
-import static java.lang.Math.PI;
-import static java.lang.Math.atan2;
-import static java.lang.Math.toRadians;
+import static java.lang.Math.*;
+import static java.lang.Math.sin;
 
 public class Boat {
     private int size;
@@ -46,17 +45,28 @@ public class Boat {
     }
 
     public void setTarget(Target target) {
-        int tx, ty;
-        double interval = 1.8;
+        int tx, ty;                                         //temporary variable for location
+        double interval = 1.7;                              //base interval from coast and frame
+        boolean noColision;
 
-        for (double i = 1.8; i > 0.3; i -= 0.1) {
-            int[] x = {(int) (length / i), 0, (int) (length / i), (int) (length / i / 2), (int) (length / i / 2), (int) (length / i)};
-            int[] y = {0, (int) (length / i), (int) (length / i / 2), (int) (length / i), (int) (length / i / 2), (int) (length / i)};
-            for (int j = 0; j < x.length; j++) {
-                tx = target.getTarget().x + x[j];
-                ty = target.getTarget().y + y[j];
+        for (double k = interval; k > 0.5; k -= 0.1) {
+            double radius = length/k;
+            // generating points in certain radius
+            for (double angle = 0; angle < 6.3; angle += 0.3925) {
+                tx = target.getTarget().x + (int) (radius * cos(angle));
+                ty = target.getTarget().y + (int) (radius * sin(angle));
+                // if not outside the borders
                 if (tx - length/interval > 0 && ty-length/interval > 0 && tx < map.numRows && ty < map.numCols){
-                    if (map.getTerrainGrid()[(int) (tx - length / interval)][ty] == Colors.OCEAN && map.getTerrainGrid()[tx][(int) (ty - length /interval)] == Colors.OCEAN && map.getTerrainGrid()[(int) (tx + length / interval)][ty] == Colors.OCEAN && map.getTerrainGrid()[tx][(int) (ty + length /interval)] == Colors.OCEAN) {
+                    // checking for terrain
+                    noColision = true;
+                    double angle2 = 0;
+                    while (angle2 < 6.3 && noColision) {
+                        if (map.getTerrainGrid()[tx + (int) (length/2 * cos(angle2))][ty + (int) (length/2 * sin(angle2))] != Colors.OCEAN || map.getTerrainGrid()[tx + (int) (length/4 * cos(angle2))][ty + (int) (length/4 * sin(angle2))] != Colors.OCEAN) {
+                            noColision = false;
+                        }
+                        angle2 += 0.3925;
+                    }
+                    if (noColision){
                         this.targetLocation.x = tx;
                         this.targetLocation.y = ty;
                         this.targetBuilding = target.getBuilding();

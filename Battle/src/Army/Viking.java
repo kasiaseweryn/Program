@@ -27,7 +27,6 @@ public class Viking {
     private boolean shield;
     private int shieldDirection;
     private int loot;
-    private boolean inCover;
     private int state;
     private int size;
     private Color color;
@@ -52,7 +51,6 @@ public class Viking {
         this.vector = 0;
         this.shield = false;
         this.shieldDirection = - (r.nextInt(61) + 30);
-        this.inCover = false;
         this.state = 1;
         this.health = 100;
         this.color = color;

@@ -14,7 +14,7 @@ import static java.lang.Math.*;
 public class SquadVikings {
     private ArrayList<Viking> vikings;
     private Building target;
-    private int state;  //0-all_dead, 1-fight, 2-retreat
+    private int state;  //0-all_dead, 1-fight, 2-retreat, 3-looting
     private int size;
     private Terrain map;
     private Village village;
@@ -68,7 +68,7 @@ public class SquadVikings {
                     }
                 }
 
-                // adding villager to squad
+                // adding viking to squad
                 if (noColision) {
                     if (vikings.size() == 0) color = Colors.VIKING_LEADER;                              // toDo make leader a boss! good stats ect :)
                     else color = Colors.VIKING;
@@ -79,8 +79,27 @@ public class SquadVikings {
         }
     }
 
+    public void estimateState(){
+
+    }
+
+    public void action() {                                  //toDo action functions
+    }
+
+    public void celebrate() {
+    }
+
+    public void surrender() {
+    }
+
+    // Setters
     public void setEnemies(ArrayList<SquadVillagers> enemies) {
         this.enemies = enemies;
+    }
+
+    // Getters
+    public int getState() {
+        return state;
     }
 
     public void draw(Graphics g) {

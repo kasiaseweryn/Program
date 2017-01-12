@@ -78,15 +78,30 @@ public class SquadVillagers {
         }
     }
 
-    public void draw(Graphics g) {
-        for( Villager i : villagers) i.draw(g);
+    public void estimateState(){
+
     }
-    
+
+    public void action() {                                  //toDo action functions
+    }
+
+    public void celebrate() {
+    }
+
+    public void surrender() {
+    }
+
+    // Setters
     public void setEnemies(ArrayList<SquadVikings> enemies) {
         this.enemies = enemies;
     }
 
-    public ArrayList<SquadVillagers> getAllies() {
-        return allies;
+    // Getters
+    public int getState() {
+        return state;
+    }
+
+    public void draw(Graphics g) {
+        for( Villager i : villagers) i.draw(g);
     }
 }

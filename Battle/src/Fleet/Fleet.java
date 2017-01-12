@@ -4,6 +4,9 @@ import Map.*;
 import Schemes.Colors;
 
 import static Colision.Distance.*;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.toRadians;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -30,45 +33,60 @@ public class Fleet {
 
         // Generating boats
         Point location = new Point();
-        boolean noColision;
+        boolean noColision = true;
         int generated = 0;                                      // number of generated boats
 
-        for (int i = 0; i < coastH.size(); i++) {
+        for (int i = 0; i < coastH.size() && generated < amount; i++) {
             location.x = coastH.get(i).x;
             location.y = coastH.get(i).y;
-            noColision = false;
 
-            // distacne from coast
+            // generating starting points
             int tx, ty;                                         //temporary variable for location
-            double interval = 1.8;
+            double interval = 1.8;                              //base interval from coast and frame
 
-            for (double k = 1.8; k > 0.4 ; k -= 0.1) {
-                int[] x = {(int) (length / k), 0, (int) (length / k), (int) (length / k / 2), (int) (length / k / 2), (int) (length / k)};
-                int[] y = {0, (int) (length / k), (int) (length / k / 2), (int) (length / k), (int) (length / k / 2), (int) (length / k)};
-                    for (int l = 0; l < 3; l++) {
-                        tx = location.x - x[l];
-                        ty = location.y - y[l];
-                        if (tx > 0 && ty > 0 && tx + length / interval < map.numRows && ty + length / interval < map.numCols)
-                            if (map.getTerrainGrid()[(int) (tx - length / interval)][ty] == Colors.OCEAN && map.getTerrainGrid()[tx][(int) (ty - length /interval)] == Colors.OCEAN && map.getTerrainGrid()[(int) (tx + length / interval)][ty] == Colors.OCEAN && map.getTerrainGrid()[tx][(int) (ty + length /interval)] == Colors.OCEAN) {
+            for (double k = interval; k > 1.4; k -= 0.1) {
+                double angle = 0;
+                double radius = length/k;
+                noColision = false;
+                    // generating points in certain radius
+                    while (angle < 6.3 && !noColision) {
+                        tx = location.x - (int) (radius * cos(angle));
+                        ty = location.y - (int) (radius * sin(angle));
+                        // if not outside the borders
+                        if (tx > 0 && ty > 0 && tx + length / interval < map.numRows && ty + length / interval < map.numCols) {
+                            // checking for terrain
+                            noColision = true;
+                            double angle2 = 0;
+                            while (angle2 < 6.3 && noColision) {
+                                if (map.getTerrainGrid()[tx + (int) (length/2 * cos(angle2))][ty + (int) (length/2 * sin(angle2))] != Colors.OCEAN || map.getTerrainGrid()[tx + (int) (length/4 * cos(angle2))][ty + (int) (length/4 * sin(angle2))] != Colors.OCEAN) {
+                                    noColision = false;
+                                }
+                                angle2 += 0.3925;
+                            }
+                            // checking for boats
+                            if (noColision){
+                                noColision = true;
+                                double spread = 1.1;
+
+                                for (Boat j : boats) {
+                                    double distance = distanceC((tx + (width / 2)), (j.getCurrentLocation().x + (j.getWidth() / 2)), (ty + (length / 2)), (j.getCurrentLocation().y + (j.getLength() / 2)));
+                                    if (distance < length * spread) {
+                                        noColision = false;
+                                    }
+                                    if (!noColision) break;
+                                }
+                            }
+                            // if there are no colisions set location
+                            if (noColision){
                                 location.x = tx;
                                 location.y = ty;
-                                noColision = true;
                             }
-                        if (noColision) break;
+                        }
+                        angle += 0.3925;
                     }
                 if (noColision) break;
             }
 
-            // distance from boats
-            noColision = true;
-            double spread = 1.1;
-
-            for (Boat j : boats) {
-                double distance = distanceC((location.x + (width / 2)), (j.getCurrentLocation().x + (j.getWidth() / 2)), (location.y + (length / 2)), (j.getCurrentLocation().y + (j.getLength() / 2)));
-                if (distance < length * spread) {
-                    noColision = false;
-                }
-            }
             // adding boats
             if (noColision && generated < amount) {
                 boats.add(new Boat(map, location, width, length, 5));
@@ -94,14 +112,14 @@ public class Fleet {
                     // distance from building
                     double distance = distanceC(coast.x, building.x, coast.y, building.y);
                     if (distance < min){
-                        // distance from boats
+                        // distance from other targets
                         noColision = true;
                         for (Target t:targets) {
                             if (distanceC(t.getTarget().x, coast.x, t.getTarget().y, coast.y) < length*spread){
                                 noColision = false;
                             }
                         }
-                        // setting new mininum and setTarget;
+                        // setting new mininum and set target;
                         if (noColision) {
                             min = (int) distance;
                             target.x = coast.x;

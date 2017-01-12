@@ -27,7 +27,6 @@ public class Villager {
     private boolean shield;
     private int shieldDirection;
     private int loot;
-    private boolean inCover;
     private int state;
     private int size;
     private Color color;
@@ -51,7 +50,6 @@ public class Villager {
         this.vector = 0;
         this.shield = true;
         this.shieldDirection = - (r.nextInt(61) + 30);
-        this.inCover = false;
         this.state = 1;
         this.health = 100;
         this.color = color;
