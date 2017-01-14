@@ -16,20 +16,22 @@ public class Fleet {
     private ArrayList<Target> targets;
     private ArrayList<Point> coastH;
     private ArrayList<Point> coastP;
+    private int state;                  // 0-waiting, 1-swimming
 
     // Constructor
     public Fleet(Terrain map, Village village) {
         // Variables for generating
         int number = 2;                                         // number of boats per building
-        int width = map.numCols / 150;                          // width of a boat
-        int length = 5 * map.numCols / 150;                     // length of a boat/number of seats -- now 5
+        int width = map.numCols / 125;                          // width of a boat
+        int length = 5 * map.numCols / 125;                     // length of a boat/number of seats -- now 5
         int amount = village.getBuildings().size() * number;    // amount of boats
 
         // Initialazing
         this.boats = new ArrayList<>();
+        this.targets = new ArrayList<>();
         this.coastH = map.getCoastH();
         this.coastP = map.getCoastP();
-        this.targets = new ArrayList<>();
+        this.state = 0;
 
         // Generating boats
         Point location = new Point();
@@ -139,9 +141,30 @@ public class Fleet {
         return boats;
     }
 
+    // OTHER FUNTIONS
+    public void estimateState(){
+        int ready = 0;
+        for (Boat i : boats){
+            i.estimateState();
+            if (i.getState() == 1) ready++;
+        }
+        if (ready == boats.size()) state = 1;
+        else state = 0;
+    }
+    
+    public void move(){
+        if (state == 1){
+            for (Boat i : boats) i.move();
+        }
+    }
+
     // Drawing
     public void draw(Graphics g){
         for (Boat i:boats) i.draw(g);
         for (Target i:targets) i.draw(g);
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }

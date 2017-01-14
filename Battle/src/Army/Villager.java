@@ -24,7 +24,8 @@ public class Villager {
     private int accuracy;
     private int dodge;
     private int loot;
-    private int state;
+    private int state;              // 0-dead, 1-fight, 2-retreat
+    private boolean targeted;
 
     // Stats for locations and targets
     private Point speed;
@@ -61,6 +62,7 @@ public class Villager {
         this.dodge = r.nextInt(11) + 10;
         this.loot = 0;
         this.state = 1;
+        this.targeted = false;
 
         // Stats for locations and targets
         this.speed = new Point(1,1);
@@ -93,13 +95,29 @@ public class Villager {
         this.enemies = enemies;
     }
 
+    public void setTargetLocation(Building targetLocation) {
+        this.targetLocation = targetLocation;
+    }
+
     // Getters
     public Point getCurrentLocation() {
         return currentLocation;
     }
 
+    public int getState() {
+        return state;
+    }
+
+    public void setTargeted(boolean targeted) {
+        this.targeted = targeted;
+    }
+
     // OTHER FUNTIONS
-    private void vector(){
+
+    public void estimateState() {
+    }
+
+    private void vector(){              // TODO: 12.01.17 make it based on type of target  
         vector = -(int) (atan2(currentLocation.x - targetLocation.getLocation().x, currentLocation.y - targetLocation.getLocation().y)*(180/PI));
     }
 

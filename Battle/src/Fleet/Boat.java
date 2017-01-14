@@ -15,7 +15,7 @@ import static java.lang.Math.sin;
 public class Boat {
     private int size;
     private int speed;
-    private ArrayList<Viking> seats;
+    private ArrayList<Viking> vikings;
     private Point startLocation;
     private Point currentLocation;
     private Point previousLocation;
@@ -26,12 +26,12 @@ public class Boat {
     private int length;
     private Terrain map;
     private ArrayList<Boat> boats;
-    private int state;  //0-have space, 1-full
+    private int state;  //0 - waiting, 1 - going
 
     public Boat(Terrain map, Point location, int width, int length, int size, ArrayList<Boat> boats){
         this.size = size;
         this.speed = 1;
-        this.seats = new ArrayList<>();
+        this.vikings = new ArrayList<>();
         this.startLocation = new Point(location);
         this.targetLocation = new Point(location);
         this.previousLocation = new Point(location);
@@ -40,7 +40,6 @@ public class Boat {
         this.width = width;
         this.length = length;
         this.map = map;
-        this.boats = new ArrayList<>();
         this.state = 0;
         this.boats = boats;
     }
@@ -77,26 +76,19 @@ public class Boat {
                 }
             }
         }
-        return;
     }
 
-    public void clearTarget(){
-        targetLocation.x = currentLocation.x;
-        targetLocation.y = currentLocation.y;
+    public void addWarrior(Viking warrior){
+        vikings.add(warrior);
     }
 
-    public void addWarior(Viking warrior){
-        if (state == 0) {
-            seats.add(warrior);
-            if (size == seats.size()) state = 1;
+    public void estimateState(){
+        int counted = 0;
+        for (Viking i : vikings){
+            if (i.getState() == 0 || i.getState() == 4) counted++;
         }
-    }
-
-    public void removeWarior(Viking warrior){
-        if (seats.size() > 0) {
-            seats.remove(warrior);
-            state = 0;
-        }
+        if (counted == vikings.size()) state = 1;
+        else state = 0;
     }
 
     public void move() {
@@ -328,6 +320,26 @@ public class Boat {
         currentLocation.x -= speed;
     }
 
+    private void moveUpRight() {
+        currentLocation.x += speed;
+        currentLocation.y -= speed;
+    }
+
+    private void moveUpLeft(){
+        currentLocation.x -= speed;
+        currentLocation.y -= speed;
+    }
+
+    private void moveDownRight(){
+        currentLocation.x += speed;
+        currentLocation.y += speed;
+    }
+
+    private void moveDownLeft(){
+        currentLocation.x -= speed;
+        currentLocation.y += speed;
+    }
+
     //Draw
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
@@ -359,5 +371,21 @@ public class Boat {
 
     public Point getCurrentLocation() {
         return currentLocation;
+    }
+
+    public Building getTargetBuilding() {
+        return targetBuilding;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public ArrayList<Viking> getVikings() {
+        return vikings;
+    }
+
+    public Point getTargetLocation() {
+        return targetLocation;
     }
 }

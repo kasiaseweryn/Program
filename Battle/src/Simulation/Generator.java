@@ -44,4 +44,8 @@ public class Generator {
     public Fleet getFleet() {
         return fleet;
     }
+
+    public Vikings getVikings() {
+        return vikings;
+    }
 }

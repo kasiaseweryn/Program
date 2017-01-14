@@ -101,9 +101,50 @@ public class SquadVillagers {
         return state;
     }
 
+    public ArrayList<Villager> getVillagers() {
+        return villagers;
+    }
+
     // OTHER FUNTIONS
     public void estimateState(){
+        // Update state of squads
+        for (Villager i : villagers) i.estimateState();
+
+        int dead = 0, counted = 0, retreated = 0;
+        // All_dead
+        for (Villager i : villagers) {
+            if (i.getState() == 0) dead ++;
+        }
+        if (dead == villagers.size()) {
+            state = 0;
+            return;
+        }
+
+        // Looting
+        for (SquadVikings i : enemies) {
+            for (Viking j : i.getVikings()) {
+                if (distanceC(target.getLocation().x, j.getCurrentLocation().x, target.getLocation().y, j.getCurrentLocation().y) < map.numCols / 25) counted++;
+            }
+        }
+        if (counted < 2) {
+            state = 3;
+            return;
+        }
+
+        // Retreated
+        for (Villager i : villagers){
+            if (i.getState() == 4) retreated ++;
+        }
+        if (retreated == villagers.size() && target.getLoot() != 0){
+            state = 2;
+            return;
+        }
+
+        // Else figth
+        state = 1;
+        return;
     }
+
 
     public void action() {                                  //toDo action functions
     }
@@ -112,6 +153,21 @@ public class SquadVillagers {
     }
 
     public void surrender() {
+    }
+
+    // Updates
+    public void updateTargetLocation(){
+        boolean found = false;
+        if (target.getLoot() == 0){
+            for (Building i : village.getBuildings()){
+                if (i.getLoot() != 0){
+                    target = i;
+                    for (Villager j:villagers) j.setTargetLocation(i);
+                    found = true;
+                }
+                if (found) break;
+            }
+        }
     }
 
     // Drawing

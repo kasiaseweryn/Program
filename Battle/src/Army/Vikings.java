@@ -10,7 +10,7 @@ import static java.lang.Math.*;
 
 public class Vikings {
     private ArrayList<SquadVikings> squads;
-    private int state;  //0-loss, 1-win, 2-fight
+    private int state;                          //0-loss, 1-win, 2-fight
 
     private Terrain map;
     private Village village;
@@ -56,23 +56,40 @@ public class Vikings {
 
     // OTHER FUNCTIONS
     public void estimateState(){
-        int lost = 0, looted = 0, defeated = 0;
+        // Update state of squads
+        for (SquadVikings i : squads) i.estimateState();
+
+        int lost = 0, retreated = 0, looted = 0, defeated = 0;
         // Losing statement
         for (SquadVikings i : squads) {
-            if (i.getState() == 0 || i.getState() == 2) lost ++;
+            if (i.getState() == 0) lost ++;
+            if (i.getState() == 2) retreated++;
         }
         if (lost == squads.size()) {
             state = 0;
             return;
         }
 
+        // Fight or loss
+        if (retreated != 0 && lost + retreated == squads.size()){
+            int size = 0, alive = 0;
+            for (SquadVikings i : squads) {
+                size += i.getSize();
+                if (i.getState() == 2) {
+                    for (Viking j : i.getVikings()) {
+                        if (j.getState() != 0) alive++;
+                    }
+                }
+            }
+            if (alive < size/2){
+                state = 0;
+                return;
+            }
+        }
+
         // Winning statement
-        for (Building i : village.getBuildings()) {
-            if (i.getLoot() == 0) looted ++;
-        }
-        for (SquadVillagers i : enemies) {
-            if (i.getState() == 0) defeated ++;
-        }
+        for (Building i : village.getBuildings()) if (i.getLoot() == 0) looted ++;
+        for (SquadVillagers i : enemies) if (i.getState() == 0) defeated ++;
         if (looted == village.getBuildings().size() || defeated == enemies.size()) {
             state = 1;
             return;
@@ -86,9 +103,9 @@ public class Vikings {
     // Actions based on state
     public void action(){
         for (SquadVikings i : squads) {
-            if (state == 0) i.surrender();
-            if (state == 1) i.celebrate();
-            if (state == 2) i.action();
+            if (state == 0) i.surrender();          // TODO: 13.01.17 hide weapon?
+            if (state == 1) i.celebrate();          // TODO: 13.01.17 jump?
+            if (state == 2) i.action();             // TODO: 13.01.17 perform action in squads based on states
         }
     }
 
