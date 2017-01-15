@@ -1,6 +1,9 @@
 package Simulation;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.util.*;
 
@@ -8,18 +11,20 @@ import java.util.*;
  * Created by anka on 15.01.17.
  */
 public class GUI extends JFrame {
-    Screen screen;
+    Simulation simulation;
 
     public GUI (int rows, int cols, int seeds){
         super("Battle");
         super.frameInit();
-        setLayout(null);
+        setLayout(new CardLayout(0,0));
 
-        screen = new Screen(rows, cols, seeds);
-        setContentPane(screen);
+
+        simulation = new Simulation(rows, cols, seeds);
+
+        setContentPane(simulation);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pack();
+        //pack();
         setVisible(true);
         setResizable(false);
         setDefaultLookAndFeelDecorated(true);
@@ -28,9 +33,11 @@ public class GUI extends JFrame {
     }
 
     public void simulation(){
-        screen.getGenerator().getFleet().setState(1);
-            screen.getGenerator().getFleet().move();
-            screen.getGenerator().getVikings().action();
+        if (simulation.getState()) {
+            simulation.getGenerator().getFleet().setState(1);
+            simulation.getGenerator().getFleet().move();
+            simulation.getGenerator().getVikings().action();
+        }
     }
 
     public void GameTimer(int timeTime) {
