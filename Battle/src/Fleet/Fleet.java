@@ -22,8 +22,8 @@ public class Fleet {
     public Fleet(Terrain map, Village village) {
         // Variables for generating
         int number = 2;                                         // number of boats per building
-        int width = map.numCols / 130;                          // width of a boat
-        int length = 5 * map.numCols / 130;                     // length of a boat/number of seats -- now 5
+        int width = map.numCols / 135;                          // width of a boat
+        int length = 5 * map.numCols / 135;                     // length of a boat/number of seats -- now 5
         int amount = village.getBuildings().size() * number;    // amount of boats
 
         // Initialazing
