@@ -129,10 +129,19 @@ public class Boat {
     }
 
     private boolean checkM(){
-        double interval = 3.5;
+        double interval = 2.1;
+        // Is in previous location
         if(currentLocation.x == previousLocation.x && currentLocation.y == previousLocation.y) return false;
-        if(currentLocation.x < length/2 || currentLocation.y < length/2 || currentLocation.x > map.numRows - length/2 || currentLocation.y > map.numCols - length/2) return false;
-        if(map.getTerrainGrid()[(int) (currentLocation.x - length / interval)][currentLocation.y] != Colors.OCEAN || map.getTerrainGrid()[currentLocation.x][(int) (currentLocation.y - length /interval)] != Colors.OCEAN || map.getTerrainGrid()[(int) (currentLocation.x + length / interval)][currentLocation.y] != Colors.OCEAN || map.getTerrainGrid()[currentLocation.x][(int) (currentLocation.y + length /interval)] != Colors.OCEAN) return false; //toDo
+        // Is outside the border
+        if(currentLocation.x < length/interval || currentLocation.y < length/interval || currentLocation.x > map.numRows - length/interval || currentLocation.y > map.numCols - length/interval) return false;
+        // Is on the land
+        double angle2 = 0;
+        while (angle2 < 6.3) {
+            if (map.getTerrainGrid()[currentLocation.x + (int) (length/interval * cos(angle2))][currentLocation.y + (int) (length/interval * sin(angle2))] != Colors.OCEAN) {
+                return false;
+            }
+            angle2 += 0.3925;
+        }
         return true;
 
     }
@@ -143,6 +152,7 @@ public class Boat {
         int zy = currentLocation.y;
         moveLeft();
         if (!checkB()) {
+            moveRight();
             moveRight();
         }
         if (checkM()) {

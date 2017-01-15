@@ -162,10 +162,6 @@ public class Viking {
         else state = 1;
         // state 3 and 4 are forced
     }
-    
-    private void vector(){
-        vector = -(int) (atan2(currentLocation.x - currentTarget.x, currentLocation.y - currentTarget.y)*(180/PI));
-    }
 
     // updating currentTarget based on state
     private void updateCurrentTarget(){
@@ -207,6 +203,15 @@ public class Viking {
         }
     }
 
+    // Moving / drawing
+    private void vector(){
+        vector = -(int) (atan2(currentLocation.x - currentTarget.x, currentLocation.y - currentTarget.y)*(180/PI));
+    }
+
+    public void move() {
+        vector();
+    }
+
     // Drawing
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
@@ -220,7 +225,4 @@ public class Viking {
         if (shield != null) shield.draw(g, currentLocation, size, vector + shieldDirection);
     }
 
-    public void move() {
-        vector();
-    }
 }

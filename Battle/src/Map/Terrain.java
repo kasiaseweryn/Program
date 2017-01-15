@@ -12,6 +12,7 @@ public class Terrain {
     private int seeds;
     public int numRows;
     public int numCols;
+
     // Grid of terrain
     private Color[][] terrainGrid;
     private ArrayList<Point> coastH;
@@ -30,26 +31,31 @@ public class Terrain {
         // Local variables
         Random r = new Random();
         int n = 0;
+        // List of seeds
         int[] px = new int[seeds];
         int[] py = new int[seeds];
+        // Color for seeds
         Color[] color = new Color[seeds];
+
+        double radiusOfVillage = numCols*0.16;
+        double radiusOfVikingIsland = numCols*0.33;
+        double radiusOfVillagersIsland = numCols*0.8;
 
         // Generate seeds
         for (int i = 0; i < seeds; i++) {
-            int x = r.nextInt(numRows);
-            int y = r.nextInt(numCols);
-            px[i] = x;
-            py[i] = y;
+            // Random seed location
+            px[i] = r.nextInt(numRows);
+            py[i] = r.nextInt(numCols);
             // City
-            if (distanceC(numRows*0.25, x, numCols*0.25, y) < numCols*0.16 ) {
+            if (distanceC(numRows*0.25, px[i], numCols*0.25, py[i]) < radiusOfVillage) {
                 color[i] = Colors.CITY;
             }
             // Viking island
-            else if ((distanceC(numRows,x,numCols,y) < numCols*0.30)) {
+            else if ((distanceC(numRows, px[i], numCols, py[i]) < radiusOfVikingIsland)) {
                 color[i] = Colors.HILLS;
                 }
             // Main island
-            else if (distanceC(0, x, 0, y) < numCols*0.8 ) {
+            else if (distanceC(0, px[i], 0, py[i]) < radiusOfVillagersIsland) {
                 color[i] = Colors.PLAINS;
             }
             // Ocean
@@ -68,25 +74,30 @@ public class Terrain {
         }
 
         // Generating coasts
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
+        for (int i = 1; i < numRows-1; i++) {
+            for (int j = 1; j < numCols-1; j++) {
+                // CoastH
                 if (terrainGrid[i][j] == Colors.HILLS) {
-                    if ((terrainGrid[i - 1][j] == Colors.OCEAN || terrainGrid[i][j - 1] == Colors.OCEAN)) {
+                    if (checkForOcean(i,j)) {
                         Point point = new Point(i, j);
                         coastH.add(point);
                     }
                 }
+                // CoastP
                 if (terrainGrid[i][j] == Colors.PLAINS) {
-                    if ((terrainGrid[i + 1][j] == Colors.OCEAN || terrainGrid[i][j + 1] == Colors.OCEAN)) {
+                    if (checkForOcean(i,j)) {
                         Point point = new Point(i, j);
                         coastP.add(point);
                     }
                 }
             }
         }
-
-
     }
+
+    private boolean checkForOcean(int i, int j){
+        return ((terrainGrid[i - 1][j] == Colors.OCEAN || terrainGrid[i][j - 1] == Colors.OCEAN) || (terrainGrid[i + 1][j] == Colors.OCEAN || terrainGrid[i][j + 1] == Colors.OCEAN));
+    }
+
     // Drawing
     public void draw(Graphics g) {
         // Landscape
@@ -104,6 +115,7 @@ public class Terrain {
         for (Point i:coastP) g.fillRect(i.x, i.y, 1, 1);
     }
 
+    // Getters
     public Color[][] getTerrainGrid() {
         return terrainGrid;
     }
