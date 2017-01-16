@@ -18,12 +18,17 @@ public class Building  {
         this.rotation = r.nextInt(91);
     }
 
-    public int looting () {
+    public int removeLoot () {
         if (this.loot > 0){
             this.loot --;
             return 1;
         }
         else return 0;
+    }
+
+    public void addLoot (int loot) {
+        this.loot += loot;
+        return;
     }
 
     public void draw(Graphics g) {

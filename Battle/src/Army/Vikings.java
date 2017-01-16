@@ -113,4 +113,8 @@ public class Vikings {
     public void draw(Graphics g){
         for (SquadVikings i:squads) i.draw(g);
     }
+
+    public int getState() {
+        return state;
+    }
 }

@@ -48,4 +48,12 @@ public class Generator {
     public Vikings getVikings() {
         return vikings;
     }
+
+    public Villagers getVillagers() {
+        return villagers;
+    }
+
+    public Village getVillage() {
+        return village;
+    }
 }

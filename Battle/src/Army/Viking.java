@@ -146,6 +146,14 @@ public class Viking {
         return state;
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public int getLoot() {
+        return loot;
+    }
+
 
     // OTHER FUNCTIONS
     public void updateMoral() {             //// TODO: 14.01.17 make it based on situations and stuff
@@ -224,5 +232,6 @@ public class Viking {
         // Shield
         if (shield != null) shield.draw(g, currentLocation, size, vector + shieldDirection);
     }
+
 
 }

@@ -7,6 +7,7 @@ public class Simulator extends JPanel {
     JPanel simulator;
 
     private Generator generator;
+    private Stats stats;
     private int rows, cols;
     private boolean state;
 
@@ -17,6 +18,7 @@ public class Simulator extends JPanel {
         //this.setPreferredSize(new Dimension(1200,1022));
         this.simulator = new JPanel();
         this.generator = new Generator(rows,cols,seeds);
+        this.stats = new Stats(generator);
     }
 
     public void simulation(){
@@ -24,6 +26,10 @@ public class Simulator extends JPanel {
             generator.getFleet().setState(1);
             generator.getFleet().move();
             generator.getVikings().action();
+
+            //!!!!!!!!!!HERE PUT WHAT YOU WANT TO SIMULATE!!!!!!!!!!!!!!//
+
+            stats.estimate();
         }
     }
 
@@ -31,6 +37,7 @@ public class Simulator extends JPanel {
     public void paintComponent(Graphics g) {
         // Important to call super class method
         generator.draw(g);
+        stats.draw(g);
         repaint();
     }
 

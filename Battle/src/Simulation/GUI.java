@@ -34,7 +34,7 @@ public class GUI extends JFrame {
 
         this.setBounds(0, 0, rows + 202, cols + 29);
 
-        // Creating panels
+        // Creating start panel
         controller = new Controller();
         this.getContentPane().add(controller, "Controller");
         controller.setLayout(null);
@@ -45,19 +45,27 @@ public class GUI extends JFrame {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent actionEvent) {
+
+                // Creating simulation
                 simulator = new Simulator(rows, cols, seeds);
                 getContentPane().add(simulator, "Simulator");
                 simulator.setLayout(null);
-                // start Timer
+
+                // Setting visibility
+                simulator.setVisible(true);
+                controller.setVisible(false);
+
+                // start timer
                 task = new TimerTask() {
                     public void run() {
                         simulator.simulation();
                     }
                 };
                 timer = new java.util.Timer();
-                timer.schedule(task,0,20);
+                timer.schedule(task,0,1000/60);
 
-                final JButton backButton = new JButton("Back");
+                // Buttons
+                final JButton backButton = new JButton("<html>Back<br />to menu</html>");
                 backButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
@@ -66,7 +74,6 @@ public class GUI extends JFrame {
                         getContentPane().remove(simulator);
                         timer.cancel();
                         task.cancel();
-                        System.out.println(getContentPane().getSize());
                     }
                 });
                 backButton.setBounds(1100,0,100,100);
@@ -89,7 +96,11 @@ public class GUI extends JFrame {
                 pauseButton.setBounds(1000,0,100,100);
                 simulator.add(pauseButton);
 
-                final JSlider speed = new JSlider(JSlider.HORIZONTAL, 1, 100, 20);
+                final JTextField textField = new JTextField("FPS = 60");
+                textField.setBounds(1050,120,100,20);
+                simulator.add(textField);
+
+                final JSlider speed = new JSlider(JSlider.HORIZONTAL, 1, 200, 60);
                 speed.addChangeListener(new ChangeListener() {
                     @Override
                     public void stateChanged(ChangeEvent changeEvent) {
@@ -103,26 +114,23 @@ public class GUI extends JFrame {
                             }
                         };
                         timer = new java.util.Timer();
-                        timer.schedule(task,0,src.getValue());
-
+                        timer.schedule(task,0,1000/src.getValue());
+                        textField.setText("FPS = " + src.getValue());
                     }
                 });
-                speed.setBounds(1000, 200, 200, 10);
+                speed.setBounds(1000, 150, 200, 20);
                 simulator.add(speed);
 
+                //
 
-                simulator.setVisible(true);
-                controller.setVisible(false);
             }
         });
         startButton.setBounds(550,550,100,100);
         controller.add(startButton);
 
 
-        //this.pack();
         this.setVisible(true);
         this.setResizable(false);
-        //this.setDefaultLookAndFeelDecorated(true);
     }
 
     public void processWindowEvent(WindowEvent e) {

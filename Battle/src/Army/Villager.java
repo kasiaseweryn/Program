@@ -112,6 +112,14 @@ public class Villager {
         this.targeted = targeted;
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public int getLoot() {
+        return loot;
+    }
+
     // OTHER FUNTIONS
 
     public void estimateState() {
