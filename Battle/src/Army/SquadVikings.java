@@ -151,7 +151,7 @@ public class SquadVikings {
     }
 
     public void action() {                                  //toDo action functions
-        for (Viking i : vikings) i.move();
+        for (Viking i : vikings) i.action();
     }
 
     public void celebrate() {

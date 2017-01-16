@@ -25,4 +25,8 @@ public class Weapon {
         g2d.rotate(toRadians(vector + 90), location.x, location.y);
         g2d.fillRect((int) (location.x - size/1.4), (int) (location.y - size/1.8), (int) (size/1.1), size/5);
     }
+
+    public int getRange() {
+        return range;
+    }
 }

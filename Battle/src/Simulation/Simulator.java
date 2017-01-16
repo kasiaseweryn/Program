@@ -23,8 +23,8 @@ public class Simulator extends JPanel {
 
     public void simulation(){
         if (state) {
-            generator.getFleet().setState(1);
-            generator.getFleet().move();
+            generator.getFleet().estimateState();
+            generator.getFleet().action();
             generator.getVikings().action();
 
             //!!!!!!!!!!HERE PUT WHAT YOU WANT TO SIMULATE!!!!!!!!!!!!!!//

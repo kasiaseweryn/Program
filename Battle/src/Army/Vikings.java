@@ -89,6 +89,7 @@ public class Vikings {
 
         // Winning statement
         for (Building i : village.getBuildings()) if (i.getLoot() == 0) looted ++;
+        // check if
         for (SquadVillagers i : enemies) if (i.getState() == 0) defeated ++;
         if (looted == village.getBuildings().size() || defeated == enemies.size()) {
             state = 1;
@@ -101,7 +102,7 @@ public class Vikings {
     }
 
     // Actions based on state
-    public void action(){
+    public void action() {
         for (SquadVikings i : squads) {
             if (state == 0) i.surrender();          // TODO: 13.01.17 hide weapon?
             if (state == 1) i.celebrate();          // TODO: 13.01.17 jump?
