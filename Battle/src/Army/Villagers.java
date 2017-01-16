@@ -76,8 +76,6 @@ public class Villagers {
     // Actions based on state
     public void action(){
         for (SquadVillagers i : squads) {
-            if (state == 0) i.surrender();
-            if (state == 1) i.celebrate();
             if (state == 2) i.action();
         }
     }

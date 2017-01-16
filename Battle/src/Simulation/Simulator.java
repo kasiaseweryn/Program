@@ -15,7 +15,6 @@ public class Simulator extends JPanel {
         this.rows = rows;
         this.cols = cols;
         this.state = false;
-        //this.setPreferredSize(new Dimension(1200,1022));
         this.simulator = new JPanel();
         this.generator = new Generator(rows,cols,seeds);
         this.stats = new Stats(generator);
@@ -23,8 +22,6 @@ public class Simulator extends JPanel {
 
     public void simulation(){
         if (state) {
-            generator.getFleet().estimateState();
-            generator.getFleet().action();
             generator.getVikings().action();
 
             //!!!!!!!!!!HERE PUT WHAT YOU WANT TO SIMULATE!!!!!!!!!!!!!!//
@@ -41,6 +38,7 @@ public class Simulator extends JPanel {
         repaint();
     }
 
+    // Getters and setters
     public Generator getGenerator() {
         return generator;
     }

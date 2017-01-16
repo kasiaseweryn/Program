@@ -1,5 +1,6 @@
 package Fleet;
 
+import Army.Viking;
 import Map.*;
 import Schemes.Colors;
 
@@ -143,17 +144,37 @@ public class Fleet {
     }
 
     // OTHER FUNTIONS
+    public void returnToBase() {
+        for (Boat i : boats){
+            i.returnToBase();
+        }
+    }
+
     public void estimateState(){
-        int ready = 0;
+        int ready = 0, size = 0, onLand = 0;
         for (Boat i : boats){
             i.estimateState();
             if (i.getState() == 1) ready++;
+            // if they have state inBoat but are on land
+            size += i.getVikings().size();
+            for (Viking j : i.getVikings()){
+                if (j.onLand()) onLand++;
+            }
         }
-        if (ready == boats.size()) state = 1;
+        if (onLand == size){
+            state = 0;
+            for (Boat i : boats){
+                for (Viking j : i.getVikings()){
+                    j.setState(1);
+                }
+            }
+        }
+        if (ready == boats.size() && onLand != size) state = 1;
         else state = 0;
     }
     
     public void action(){
+        estimateState();
         if (state == 1){
             for (Boat i : boats) i.move();
         }
@@ -168,4 +189,6 @@ public class Fleet {
     public void setState(int state) {
         this.state = state;
     }
+
+
 }

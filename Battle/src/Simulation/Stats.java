@@ -43,7 +43,14 @@ public class Stats {
                 vikingsHealth += j.getHealth();
             }
         }
-        vikingsState = "Fighting";
+        switch (generator.getVikings().getState()){
+            case 0 : vikingsState = "Loss";
+                break;
+            case 1 : vikingsState = "Win";
+                break;
+            case 2 : vikingsState = "Fighting";
+                break;
+        }
 
         villagersHealth = 0;
         villagersAlive = 0;
@@ -60,7 +67,14 @@ public class Stats {
         for (Building i : generator.getVillage().getBuildings()){
             lootInVillage += i.getLoot();
         }
-        villagersState = "Fighting";
+        switch (generator.getVillagers().getState()){
+            case 0 : villagersState = "Loss";
+                break;
+            case 1 : villagersState = "Win";
+                break;
+            case 2 : villagersState = "Fighting";
+                break;
+        }
     }
 
     public void estimate(){

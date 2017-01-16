@@ -85,11 +85,12 @@ public class Vikings {
                 state = 0;
                 return;
             }
+            // TODO: 16.01.17 make else to set that after regrouping they attack
         }
 
         // Winning statement
         for (Building i : village.getBuildings()) if (i.getLoot() == 0) looted ++;
-        // check if
+        // todo check if vikings are away from village
         for (SquadVillagers i : enemies) if (i.getState() == 0) defeated ++;
         if (looted == village.getBuildings().size() || defeated == enemies.size()) {
             state = 1;
@@ -103,11 +104,17 @@ public class Vikings {
 
     // Actions based on state
     public void action() {
-        for (SquadVikings i : squads) {
-            if (state == 0) i.surrender();          // TODO: 13.01.17 hide weapon?
-            if (state == 1) i.celebrate();          // TODO: 13.01.17 jump?
-            if (state == 2) i.action();             // TODO: 13.01.17 perform action in squads based on states
+        estimateState();
+        switch (state){
+            case 0 : fleet.returnToBase();
+                break;
+            case 1 : fleet.returnToBase();
+                break;
+            case 2 :
+                break;
         }
+        fleet.action();
+        for (SquadVikings i : squads) i.action();
     }
 
     // Drawing

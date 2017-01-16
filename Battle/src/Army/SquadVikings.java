@@ -150,14 +150,9 @@ public class SquadVikings {
         return;
     }
 
-    public void action() {                                  //toDo action functions
+    public void action() {
+        updateTargetLocation();
         for (Viking i : vikings) i.action();
-    }
-
-    public void celebrate() {
-    }
-
-    public void surrender() {
     }
 
     // Updates

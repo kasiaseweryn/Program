@@ -25,7 +25,7 @@ public class Villager {
     private int dodge;
     private int loot;
     private int state;              // 0-dead, 1-fight, 2-retreat
-    private boolean targeted;
+    private int targeted;
 
     // Stats for locations and targets
     private Point speed;
@@ -62,7 +62,7 @@ public class Villager {
         this.dodge = r.nextInt(11) + 10;
         this.loot = 0;
         this.state = 1;
-        this.targeted = false;
+        this.targeted = 0;
 
         // Stats for locations and targets
         this.speed = new Point(1,1);
@@ -99,6 +99,14 @@ public class Villager {
         this.targetLocation = targetLocation;
     }
 
+    public void setTargeted() {
+        targeted ++;
+    }
+
+    public void unsetTargeted() {
+        targeted--;
+    }
+
     // Getters
     public Point getCurrentLocation() {
         return currentLocation;
@@ -108,16 +116,16 @@ public class Villager {
         return state;
     }
 
-    public void setTargeted(boolean targeted) {
-        this.targeted = targeted;
-    }
-
     public int getHealth() {
         return health;
     }
 
     public int getLoot() {
         return loot;
+    }
+
+    public int getTargeted() {
+        return targeted;
     }
 
     // OTHER FUNTIONS

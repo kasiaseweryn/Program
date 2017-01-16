@@ -55,7 +55,7 @@ public class SquadVillagers {
             while (!generated) {
 
                 // generating random point in radius of a building
-                double angle = Math.toRadians(Math.random() * 360);
+                double angle = toRadians(random() * 360);
                 location.x = target.getLocation().x + (int) (radius * cos(angle));
                 location.y = target.getLocation().y + (int) (radius * sin(angle));
 

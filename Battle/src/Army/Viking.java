@@ -137,6 +137,10 @@ public class Viking {
         this.currentLocation = currentLocation;
     }
 
+    public void setState(int state) {
+        this.state = state;
+    }
+
 
     // Getters
     public Point getCurrentLocation() {
@@ -169,8 +173,9 @@ public class Viking {
     public void estimateState() {
         if (health == 0) state = 0;
         if (!moralCheck()) state = 2;
+        if (state == 3) state = 3;
+        if (state == 4) state = 4;
         else state = 1;
-        // state 3 and 4 are forced
     }
 
     // updating currentTarget based on state
@@ -206,24 +211,46 @@ public class Viking {
         }
     }
 
-    private double distanceFromCurrentTarget(){
+    private double distanceFromTargetBuilding(){
+        return distanceC(currentLocation.x, targetBuilding.getLocation().x, currentLocation.y, targetBuilding.getLocation().y);
+    }
+
+    private double distanceFromTargetEnemy() {
+        return distanceC(currentLocation.x, targetEnemy.getCurrentLocation().x, currentLocation.y, targetEnemy.getCurrentLocation().y);
+    }
+
+    private double distanceFromTargetBoat(){
         return distanceC(currentLocation.x, targetBoat.getCurrentLocation().x, currentLocation.y, targetBoat.getCurrentLocation().y);
     }
+
     // Vector based on current target
     private void vector(){
         vector = -(int) (atan2(currentLocation.x - currentTarget.x, currentLocation.y - currentTarget.y)*(180/PI));
     }
 
-    public void findTargetEnemy(){
-        if (targetEnemy == null && state == 1){
-            if (distanceC(currentLocation.x, targetBuilding.getLocation().x, currentLocation.y, targetBuilding.getLocation().y) < 50) {
-            // TODO: 16.01.17 make search in certain radius of a building and pick the closest target not targeted by more that one
+    public void findTargetEnemy() {
+        boolean found = false;
+        if (state == 1) {
+            if (distanceC(currentLocation.x, targetBuilding.getLocation().x, currentLocation.y, targetBuilding.getLocation().y) < 200) {
+                for (SquadVillagers i : enemies) {
+                    for (Villager j : i.getVillagers()) {
+                        if (distanceC(targetBuilding.getLocation().x, j.getCurrentLocation().x, targetBuilding.getLocation().y, j.getCurrentLocation().y) < 100) {
+                            if (j.getTargeted() < 2) {
+                                targetEnemy = j;
+                                j.setTargeted();
+                                found = true;
+                            }
+                        }
+                        if (found) return;
+                    }
+                    if (found) return;
+                }
             }
         }
     }
 
     public void action() {
-        //findTargetEnemy();
+        findTargetEnemy();
         updateCurrentTarget();
         vector();
 
@@ -234,58 +261,103 @@ public class Viking {
 
         // if retreating or being on hills
         if (state == 2 || map.getTerrainGrid()[currentLocation.x][currentLocation.y] == Colors.HILLS){
-            if (distanceFromCurrentTarget() < targetBoat.getLength()*2) {
-                currentLocation = targetBoat.getCurrentLocation();
+            if (distanceFromTargetBoat() < targetBoat.getLength()*2) {
+                currentLocation.x = targetBoat.getCurrentLocation().x;
+                currentLocation.y = targetBoat.getCurrentLocation().y;
                 state = 4;
-                //System.out.println("Get on boat");
                 return;
             }
             else {
                 move();
-                //System.out.println("Move to boat");
                 return;
             }
         }
 
         // if fighting
+        // TODO: 16.01.17 BUGS HERE
         if (state == 1){
-            if (currentTarget != null)
-                if (distanceFromCurrentTarget() <= primeWeapon.getRange()) {
-                    attack();
-                    return;
-                }
-            else {
-                    move();
-                    //System.out.println("Move");
-                    return;
-                }
-        }
-
-        // if looting
-        if (state == 3){
-            if (distanceFromCurrentTarget() <= targetBuilding.getHeight()/2 && loot < 3){
-                loot += targetBuilding.getLoot();
+            if (targetEnemy == null){
+                move();
+                System.out.println("Move to building");
+                return;
+            }
+            else if (distanceFromTargetEnemy() <= primeWeapon.getRange()) {
+                attack();
+                System.out.println("attacking");
                 return;
             }
             else {
                 move();
+                System.out.println("Move to enemy");
+                return;
+            }
+
+        }
+
+        // if looting
+        if (state == 3){
+            if (distanceFromTargetBuilding() <= targetBuilding.getHeight()/2 && loot < 3){
+                loot += targetBuilding.getLoot();
+                //System.out.println("looting");
+                return;
+            }
+            else {
+                move();
+                //System.out.println("moving to building");
                 return;
             }
         }
 
         // if sailing
         if (state == 4){
-            if (currentLocation == currentTarget){
-                // TODO: 16.01.17 find a place to get of boat
+            // get out of boat
+            if (currentLocation.x == currentTarget.x && currentLocation.y == currentTarget.y){
+                Random r = new Random();
+                boolean generated = false, noColision;
+                Point location = new Point();
+                // generating random point in radius of a boat
+                while (!generated) {
+                    double angle = toRadians(random() * 360);
+                    double radius = r.nextDouble() + targetBoat.getLength()*1.2;
+                    location.x = currentLocation.x + (int) (radius * cos(angle));
+                    location.y = currentLocation.y + (int) (radius * sin(angle));
+                    // if in bounds
+                    if (location.x > 0 && location.y > 0 && location.x < map.numRows && location.y < map.numCols) {
+                        // if on land
+                        if (map.getTerrainGrid()[location.x][location.y] != Colors.OCEAN) {
+                            // checking for vikings
+                            noColision = true;
+                            double spread = 1.1;
+                            for (SquadVikings j : this.allies) {
+                                for (Viking k : j.getVikings()) {
+                                    double distance = distanceC(location.x, k.getCurrentLocation().x, location.y, k.getCurrentLocation().y);
+                                    if (distance < size * spread) {
+                                        noColision = false;
+                                    }
+                                }
+                            }
+                            if (noColision) {
+                                currentLocation.x = location.x;
+                                currentLocation.y = location.y;
+                                generated = true;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
     private void attack() {
+        System.out.println("Damage!!");
         // TODO: 16.01.17 Make attack system based on DH RP
     }
 
-    // temporary because we have to make tests
+    public boolean onLand() {
+        return (state == 4 && map.getTerrainGrid()[currentLocation.x][currentLocation.y] != Colors.OCEAN);
+    }
+
+    // MOVING TEMP!!!
     public void move(){
         if (vector < 22.5 && vector >= -22.5) {
             moveUp();

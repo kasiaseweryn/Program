@@ -44,6 +44,7 @@ public class Boat {
         this.boats = boats;
     }
 
+    // Setters
     public void setTarget(Target target) {
         int tx, ty;                                         //temporary variable for location
         double interval = 1.7;                              //base interval from coast and frame
@@ -78,6 +79,45 @@ public class Boat {
         }
     }
 
+    // Getters
+    public int getWidth() {
+        return width;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public Point getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public Building getTargetBuilding() {
+        return targetBuilding;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public ArrayList<Viking> getVikings() {
+        return vikings;
+    }
+
+    public Point getTargetLocation() {
+        return targetLocation;
+    }
+
+
+    // OTHER FUNCTIONS
+    public void returnToBase() {
+        targetLocation = startLocation;
+    }
+
     public void addWarrior(Viking warrior){
         vikings.add(warrior);
     }
@@ -91,6 +131,7 @@ public class Boat {
         else state = 0;
     }
 
+    // MOVING
     private void vector(){
         vector = -(int) (atan2(currentLocation.x - targetLocation.x, currentLocation.y - targetLocation.y)*(180/PI));
     }
@@ -98,33 +139,43 @@ public class Boat {
     public void move() {
         if (currentLocation.x != targetLocation.x || currentLocation.y != targetLocation.y) {
             this.vector();
-//            if (targetLocation.x >= targetLocation.y) {
-//                if (currentLocation.y - targetLocation.y > 0) Up();
-//                else {
-//                    if (currentLocation.y == targetLocation.y && currentLocation.x > targetLocation.x) Left();
-//                    else Right();
-//                }
-//                if (currentLocation.y - targetLocation.y < 0) Down();
-//            }
-//            if (targetLocation.x < targetLocation.y){
-//                if (currentLocation.x - targetLocation.x > 0) Left();
-//                else {
-//                    if (currentLocation.x == targetLocation.x && currentLocation.y > currentLocation.x) Up();
-//                    else Down();
-//                }
-//                if (currentLocation.x - targetLocation.x < 0) Right();
-//            }
-            if (vector < 22.5 && vector >= -22.5) moveUp();
-            if (vector < 67.5 && vector >= 22.5) moveUpRight();
-            if (vector < 112.5 && vector >= 67.5) moveRight();
-            if (vector < 157.5 && vector >= 112.5) moveDownRight();
-            if (vector < -157.5 && vector >= 157.5) moveDown();
-            if (vector < -112.5 && vector >= -157.5) moveDownLeft();
-            if (vector < -67.5 && vector >= -112.5) moveLeft();
-            if (vector < -22.5 && vector >= -67.5) moveUpLeft();
+//            if (vector < 45 && vector >= -45) Up();
+//            if (vector < 135 && vector >= 45) Right();
+//            if (vector < -135 && vector >= 135) Down();
+//            if (vector < -45 && vector >= -135) Left();
+
+//            if (vector < 22.5 && vector >= -22.5) moveUp();
+//            if (vector < 67.5 && vector >= 22.5) moveUpRight();
+//            if (vector < 112.5 && vector >= 67.5) moveRight();
+//            if (vector < 157.5 && vector >= 112.5) moveDownRight();
+//            if (vector < -157.5 && vector >= 157.5) moveDown();
+//            if (vector < -112.5 && vector >= -157.5) moveDownLeft();
+//            if (vector < -67.5 && vector >= -112.5) moveLeft();
+//            if (vector < -22.5 && vector >= -67.5) moveUpLeft();
+
+            if (targetLocation.x >= targetLocation.y) {
+                if (currentLocation.y - targetLocation.y > 0) Up();
+                else {
+                    if (currentLocation.y == targetLocation.y && currentLocation.x > targetLocation.x) Left();
+                    else Right();
+                }
+                if (currentLocation.y - targetLocation.y < 0) Down();
+            }
+            if (targetLocation.x < targetLocation.y){
+                if (currentLocation.x - targetLocation.x > 0) Left();
+                else {
+                    if (currentLocation.x == targetLocation.x && currentLocation.y > currentLocation.x) Up();
+                    else Down();
+                }
+                if (currentLocation.x - targetLocation.x < 0) Right();
+            }
+
+            for (Viking i : vikings){
+                i.getCurrentLocation().x = currentLocation.x;
+                i.getCurrentLocation().y = currentLocation.y;
+            }
         }
     }
-
 
     private boolean checkB() {
 
@@ -138,7 +189,7 @@ public class Boat {
     }
 
     private boolean checkM(){
-        double interval = 2.1;
+        double interval = 2.5;
         // Is in previous location
         if(currentLocation.x == previousLocation.x && currentLocation.y == previousLocation.y) return false;
         // Is outside the border
@@ -149,9 +200,10 @@ public class Boat {
             if (map.getTerrainGrid()[currentLocation.x + (int) (length/interval * cos(angle2))][currentLocation.y + (int) (length/interval * sin(angle2))] != Colors.OCEAN) {
                 return false;
             }
-            angle2 += 0.3925;
+            angle2 += 0.3;
         }
         return true;
+
     }
 
     private void setPreviousLocation(int x, int y){
@@ -164,10 +216,10 @@ public class Boat {
         int zx = currentLocation.x;
         int zy = currentLocation.y;
         moveLeft();
-        if (!checkB()) {
-            moveRight();
-            moveRight();
-        }
+//        if (!checkB()) {
+//            moveRight();
+//            moveRight();
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
@@ -176,10 +228,10 @@ public class Boat {
         moveRight();
 
         moveDown();
-        if (!checkB()) {
-            moveUp();
-            return;
-        }
+//        if (!checkB()) {
+//            moveUp();
+//            return;
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
@@ -188,10 +240,10 @@ public class Boat {
         moveUp();
 
         moveUp();
-        if (!checkB()) {
-            moveDown();
-            return;
-        }
+//        if (!checkB()) {
+//            moveDown();
+//            return;
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
@@ -205,11 +257,11 @@ public class Boat {
         int zx = currentLocation.x;
         int zy = currentLocation.y;
         moveRight();
-        if (!checkB()) {
-            moveLeft();
-            moveLeft();
-            return;
-        }
+//        if (!checkB()) {
+//            moveLeft();
+//            moveLeft();
+//            return;
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
@@ -217,29 +269,29 @@ public class Boat {
         }
         moveLeft();
 
-        moveUp();
-        if (!checkB()) {
-            moveDown();
-            return;
-        }
+        moveDown();
+//        if (!checkB()) {
+//            moveDown();
+//            return;
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
             return;
         }
-        moveDown();
+        moveUp();
 
-        moveDown();
-        if (!checkB()) {
-            moveUp();
-            return;
-        }
+        moveUp();
+//        if (!checkB()) {
+//            moveUp();
+//            return;
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
             return;
         }
-        moveUp();
+        moveDown();
 
     }
 
@@ -248,10 +300,10 @@ public class Boat {
         int zx = currentLocation.x;
         int zy = currentLocation.y;
         moveUp();
-        if (!checkB()) {
-            moveDown();
-            moveDown();
-        }
+//        if (!checkB()) {
+//            moveDown();
+//            moveDown();
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
@@ -260,10 +312,10 @@ public class Boat {
         moveDown();
 
         moveRight();
-        if (!checkB()) {
-            moveLeft();
-            return;
-        }
+//        if (!checkB()) {
+//            moveLeft();
+//            return;
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
@@ -272,10 +324,10 @@ public class Boat {
         moveLeft();
 
         moveLeft();
-        if (!checkB()) {
-            moveRight();
-            return;
-        }
+//        if (!checkB()) {
+//            moveRight();
+//            return;
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
@@ -289,11 +341,11 @@ public class Boat {
         int zx = currentLocation.x;
         int zy = currentLocation.y;
         moveDown();
-        if (!checkB()) {
-            moveUp();
-            moveUp();
-            return;
-        }
+//        if (!checkB()) {
+//            moveUp();
+//            moveUp();
+//            return;
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
@@ -302,10 +354,10 @@ public class Boat {
         moveUp();
 
         moveLeft();
-        if (!checkB()) {
-            moveRight();
-            return;
-        }
+//        if (!checkB()) {
+//            moveRight();
+//            return;
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
@@ -314,10 +366,10 @@ public class Boat {
         moveRight();
 
         moveRight();
-        if (!checkB()) {
-            moveLeft();
-            return;
-        }
+//        if (!checkB()) {
+//            moveLeft();
+//            return;
+//        }
         if (checkM()) {
             previousLocation.x = zx;
             previousLocation.y = zy;
@@ -363,7 +415,7 @@ public class Boat {
         currentLocation.y += speed;
     }
 
-    //Draw
+    //Drawing
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
         // Boat
@@ -378,359 +430,4 @@ public class Boat {
         // Start
         g.fillRect(startLocation.x, startLocation.y, 3, 3);
     }
-
-    // Getters
-    public int getWidth() {
-        return width;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public Point getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public Building getTargetBuilding() {
-        return targetBuilding;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public ArrayList<Viking> getVikings() {
-        return vikings;
-    }
-
-    public Point getTargetLocation() {
-        return targetLocation;
-    }
 }
-
-
-
-
-
-
-//    private void Left() {
-//        int x = currentLocation.x;
-//        int y = currentLocation.y;
-//        moveLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveRight();
-//        moveRight();
-//
-//        moveUpLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDownRight();
-//
-//        moveDownLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUpRight();
-//
-//        moveUp();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDown();
-//
-//        moveDown();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUp();
-//    }
-//
-//    private void Right() {
-//        int x = currentLocation.x;
-//        int y = currentLocation.y;
-//        moveRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveLeft();
-//
-//        moveUpRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDownLeft();
-//
-//        moveDownRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUpLeft();
-//
-//        moveUp();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDown();
-//
-//        moveDown();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUp();
-//    }
-//
-//    private void Up() {
-//        int x = currentLocation.x;
-//        int y = currentLocation.y;
-//        moveUp();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDown();
-//        moveDown();
-//
-//        moveUpRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDownLeft();
-//
-//        moveUpLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDownRight();
-//
-//        moveRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveLeft();
-//
-//        moveLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveRight();
-//    }
-//
-//    private void Down() {
-//        int x = currentLocation.x;
-//        int y = currentLocation.y;
-//        moveDown();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUp();
-//
-//        moveDownLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUpRight();
-//
-//        moveDownRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUpLeft();
-//
-//        moveLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveRight();
-//
-//        moveRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveLeft();
-//
-//    }
-//
-//    private void UpLeft() {
-//        int x = currentLocation.x;
-//        int y = currentLocation.y;
-//        moveUpLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDownRight();
-//        moveDownRight();
-//
-//        moveUp();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDown();
-//
-//        moveLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveRight();
-//
-//        moveUpRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDownLeft();
-//
-//        moveRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveLeft();
-//    }
-//
-//    private void UpRight() {
-//        int x = currentLocation.x;
-//        int y = currentLocation.y;
-//        moveUpRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDownLeft();
-//
-//        moveUp();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDown();
-//
-//        moveRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveLeft();
-//
-//        moveUpLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveDownRight();
-//
-//        moveLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveRight();
-//    }
-//
-//    private void DownLeft(){
-//        int x = currentLocation.x;
-//        int y = currentLocation.y;
-//        moveDownLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUpRight();
-//
-//        moveDown();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUp();
-//
-//        moveLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveRight();
-//
-//        moveDownRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUpLeft();
-//
-//        moveRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveLeft();
-//    }
-//
-//    private void DownRight(){
-//        int x = currentLocation.x;
-//        int y = currentLocation.y;
-//        moveDownRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUpLeft();
-//        moveUpLeft();
-//
-//        moveDown();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUp();
-//
-//        moveRight();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveLeft();
-//
-//        moveDownLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveUpRight();
-//
-//        moveLeft();
-//        if (check()){
-//            setPreviousLocation(x,y);
-//            return;
-//        }
-//        moveRight();
-//    }
