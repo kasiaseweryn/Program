@@ -150,7 +150,6 @@ public class SquadVikings {
 
         // Else figth
         state = 1;
-        return;
     }
 
     public void action() {

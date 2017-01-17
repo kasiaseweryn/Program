@@ -7,7 +7,6 @@ import Schemes.Colors;
 import static Colision.Distance.*;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
-import static java.lang.Math.toRadians;
 
 import java.awt.*;
 import java.util.ArrayList;

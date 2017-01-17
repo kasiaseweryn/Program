@@ -5,7 +5,6 @@ import Armament.Weapon;
 import Map.Building;
 import Map.Terrain;
 import Map.Village;
-import Schemes.Colors;
 import Schemes.Weapons;
 
 import java.awt.*;

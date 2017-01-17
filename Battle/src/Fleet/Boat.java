@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import static Colision.Distance.*;
 import static java.lang.Math.*;
-import static java.lang.Math.sin;
 
 public class Boat {
     private int size;

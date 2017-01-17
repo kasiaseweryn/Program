@@ -5,7 +5,6 @@ import Army.SquadVillagers;
 import Army.Viking;
 import Army.Villager;
 import Map.Building;
-import Map.Village;
 import Schemes.Colors;
 
 import java.awt.*;

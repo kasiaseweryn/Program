@@ -70,7 +70,6 @@ public class Villagers {
 
         // Else figth
         state = 2;
-        return;
     }
 
     // Actions based on state

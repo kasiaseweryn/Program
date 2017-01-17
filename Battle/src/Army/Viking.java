@@ -10,12 +10,10 @@ import Schemes.Weapons;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Random;
 
 import static Colision.Distance.distanceC;
 import static java.lang.Math.*;
-import static java.lang.Math.sin;
 
 public class Viking {
     // Stats for battle
@@ -208,7 +206,6 @@ public class Viking {
         }
         if (state == 4) {
             currentTarget = targetBoat.getTargetLocation();
-            return;
         }
     }
 
@@ -349,16 +346,9 @@ public class Viking {
         // TODO: 16.01.17 Make attack system based on DH RP
         Random r = new Random();
         if (r.nextInt(101) < accuracy + primeWeapon.getAccuracy()){
-            if (r.nextInt(101) < targetEnemy.getDodge()){
-                return;
-            }
-            else {
+            if (r.nextInt(101) >= targetEnemy.getDodge())
                 targetEnemy.damage(r.nextInt(5) + primeWeapon.getDamage(), primeWeapon.getPenetration());
-                return;
-            }
         }
-        else return;
-
     }
 
     public boolean onLand() {
@@ -369,42 +359,42 @@ public class Viking {
     public void move(){
         if (vector < 22.5 && vector >= -22.5) {
             moveUp();
-            if (check()) return;
+            if (checkM()) return;
             else moveDown();
         }
         if (vector < 67.5 && vector >= 22.5) {
             moveUpRight();
-            if (check()) return;
+            if (checkM()) return;
             else moveDownLeft();
         }
         if (vector < 112.5 && vector >= 67.5) {
             moveRight();
-            if (check()) return;
+            if (checkM()) return;
             else moveLeft();
         }
         if (vector < 157.5 && vector >= 112.5) {
             moveDownRight();
-            if (check()) return;
+            if (checkM()) return;
             else moveUpLeft();
         }
         if (vector < -157.5 && vector >= 157.5) {
             moveDown();
-            if (check()) return;
+            if (checkM()) return;
             else moveUp();
         }
         if (vector < -112.5 && vector >= -157.5) {
             moveDownLeft();
-            if (check()) return;
+            if (checkM()) return;
             else moveUpRight();
         }
         if (vector < -67.5 && vector >= -112.5) {
             moveLeft();
-            if (check()) return;
+            if (checkM()) return;
             else moveRight();
         }
         if (vector < -22.5 && vector >= -67.5) {
             moveUpLeft();
-            if (check()) return;
+            if (checkM()) return;
             else moveDownRight();
         }
     }

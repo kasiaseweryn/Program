@@ -99,7 +99,6 @@ public class Vikings {
 
         // Else figth
         state = 2;
-        return;
     }
 
     // Actions based on state
