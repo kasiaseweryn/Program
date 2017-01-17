@@ -117,14 +117,15 @@ public class Boat {
         targetLocation = startLocation;
     }
 
-    public void addWarrior(Viking warrior){
-        vikings.add(warrior);
+    public void addViking(Viking viking){
+        vikings.add(viking);
     }
 
     public void estimateState(){
         int counted = 0;
         for (Viking i : vikings){
-            if (i.getState() == 0 || i.getState() == 4) counted++;
+
+            if (i.getState() == States.DEAD || i.getState() == States.INBOAT || i.getState() == States.WAITING) counted++;
         }
         if (counted == vikings.size()) state = 1;
         else state = 0;
@@ -138,36 +139,10 @@ public class Boat {
     public void move() {
         if (currentLocation.x != targetLocation.x || currentLocation.y != targetLocation.y) {
             this.vector();
-//            if (vector < 45 && vector >= -45) Up();
-//            if (vector < 135 && vector >= 45) Right();
-//            if (vector < -135 && vector >= 135) Down();
-//            if (vector < -45 && vector >= -135) Left();
-
-//            if (vector < 22.5 && vector >= -22.5) moveUp();
-//            if (vector < 67.5 && vector >= 22.5) moveUpRight();
-//            if (vector < 112.5 && vector >= 67.5) moveRight();
-//            if (vector < 157.5 && vector >= 112.5) moveDownRight();
-//            if (vector < -157.5 && vector >= 157.5) moveDown();
-//            if (vector < -112.5 && vector >= -157.5) moveDownLeft();
-//            if (vector < -67.5 && vector >= -112.5) moveLeft();
-//            if (vector < -22.5 && vector >= -67.5) moveUpLeft();
-
-            if (targetLocation.x >= targetLocation.y) {
-                if (currentLocation.y - targetLocation.y > 0) Up();
-                else {
-                    if (currentLocation.y == targetLocation.y && currentLocation.x > targetLocation.x) Left();
-                    else Right();
-                }
-                if (currentLocation.y - targetLocation.y < 0) Down();
-            }
-            if (targetLocation.x < targetLocation.y){
-                if (currentLocation.x - targetLocation.x > 0) Left();
-                else {
-                    if (currentLocation.x == targetLocation.x && currentLocation.y > currentLocation.x) Up();
-                    else Down();
-                }
-                if (currentLocation.x - targetLocation.x < 0) Right();
-            }
+            if (vector < 45 && vector >= -45) Up();
+            if (vector < 135 && vector >= 45) Right();
+            if (vector < -135 && vector >= 135) Down();
+            if (vector < -45 && vector >= -135) Left();
 
             for (Viking i : vikings){
                 i.getCurrentLocation().x = currentLocation.x;
@@ -177,7 +152,6 @@ public class Boat {
     }
 
     private boolean checkB() {
-
         for (Boat i:boats) {
             if (i != this) {
                 double distance = distanceC((currentLocation.x +(width/2)),(i.currentLocation.x +(i.width/2)), (currentLocation.y +(this.length/2)), (i.currentLocation.y +(i.length/2)));
@@ -188,7 +162,7 @@ public class Boat {
     }
 
     private boolean checkM(){
-        double interval = 4;
+        double interval = 2.5;
         // Is in previous location
         if(currentLocation.x == previousLocation.x && currentLocation.y == previousLocation.y) return false;
         // Is outside the border
@@ -202,7 +176,6 @@ public class Boat {
             angle2 += 0.3;
         }
         return true;
-
     }
 
     private void setPreviousLocation(int x, int y){

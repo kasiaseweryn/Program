@@ -3,6 +3,7 @@ package Fleet;
 import Army.Viking;
 import Map.*;
 import Schemes.Colors;
+import Schemes.States;
 
 import static Colision.Distance.*;
 import static java.lang.Math.cos;
@@ -164,7 +165,7 @@ public class Fleet {
             state = 0;
             for (Boat i : boats){
                 for (Viking j : i.getVikings()){
-                    j.setState(1);
+                    j.setState(States.FIGHT);
                 }
             }
         }

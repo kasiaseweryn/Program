@@ -5,8 +5,8 @@ import Armament.ThrownWeapon;
 import Armament.Weapon;
 import Fleet.*;
 import Map.*;
-import Schemes.Colors;
-import Schemes.Weapons;
+import Schemes.*;
+
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class Viking {
     private int accuracy;
     private int dodge;
     private int loot;
-    private int state;      // 0-dead, 1-fight, 2-retreat, 3-looting, 4-inBoat
+    private int state;
     private int targeted;
 
     // Stats for locations and targets
@@ -67,7 +67,7 @@ public class Viking {
         this.accuracy = r.nextInt(31) + 30;
         this.dodge = r.nextInt(21) + 10;
         this.loot = 0;
-        this.state = 1;
+        this.state = States.FIGHT;
         this.targeted = 0;
 
         // Stats for locations and targets
@@ -97,6 +97,7 @@ public class Viking {
 
         // Other agents
         this.allies = allies;
+        // TODO: 17.01.17
 // HERE IS A BUG!!!!!!!!
         // Setting targetBoat
         boolean found = false;
@@ -104,12 +105,13 @@ public class Viking {
             if (i.getTargetBuilding() == targetBuilding)
                 if (i.getSize() > i.getVikings().size()){
                     this.targetBoat = i;
-                    i.addWarrior(this);
+                    i.addViking(this);
                     found = true;
                 }
             if (found) break;
         }
 // HERE IS A BUG!!!!!!!!
+
         //  Setting currentTarget to boat
         this.currentTarget = targetBoat.getCurrentLocation();
         vector();
@@ -132,22 +134,24 @@ public class Viking {
         this.targetBuilding = targetBuilding;
     }
 
-    public void setCurrentLocation(Point currentLocation) {
-        this.currentLocation = currentLocation;
-    }
-
-    public void setState(int state) {
-        this.state = state;
-    }
-
-
     // Getters
     public Point getCurrentLocation() {
         return currentLocation;
     }
 
+    public void setCurrentLocation(Point currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
     public int getState() {
         return state;
+    }
+
+
+    // TODO: 17.01.17 make other one for retreat ]
+    public void setState(int state) {
+        if (state == States.DEAD || state == States.INBOAT || state == States.WAITING) return;
+        else this.state = state;
     }
 
     public int getHealth() {
@@ -170,20 +174,67 @@ public class Viking {
     }
 
     public void estimateState() {
-        if (health == 0) state = 0;
-        if (!moralCheck()) state = 2;
-        if (state == 3) state = 3;
-        if (state == 4) state = 4;
-        else state = 1;
+        // Set dead
+        if (health == 0) {
+            state = States.DEAD;
+            return;
+        }
+
+        // Set retreat
+        if (!moralCheck()) {
+            state = States.RETREAT;
+            return;
+        }
+
+        // Set looting or fight
+        if (state == States.LOOTING) {
+            if (targetBuilding.getLoot() == 0 || loot == 3) {
+                state = States.FIGHT;
+                return;
+            }
+            else {
+                state = States.LOOTING;
+                return;
+            }
+        }
+
+        // Set sailing or waiting on shore
+        if (state == States.INBOAT) {
+            if (map.getTerrainGrid()[currentLocation.x][currentLocation.y] != Colors.OCEAN) {
+                state = States.WAITING;
+                return;
+            }
+            else {
+                state = States.INBOAT;
+                return;
+            }
+        }
+
+        // Set waiting
+        if (state == States.WAITING) {
+            state = States.WAITING;
+            return;
+        }
+
+        if (state == States.RETREAT) {
+            state = States.RETREAT;
+            return;
+        }
+
+        // Set fight
+        else state = States.FIGHT;
     }
 
     // updating currentTarget based on state
     private void updateCurrentTarget(){
-        if (state == 0) {
+        // DEAD
+        if (state == States.DEAD) {
             currentTarget = null;
             return;
         }
-        if (state == 1)
+
+        // FIGHTING
+        if (state == States.FIGHT){
             if (map.getTerrainGrid()[currentLocation.x][currentLocation.y] == Colors.HILLS) {
                 currentTarget = targetBoat.getCurrentLocation();
                 return;
@@ -196,16 +247,28 @@ public class Viking {
                 currentTarget = targetBuilding.getLocation();
                 return;
             }
-        if (state == 2) {
+        }
+
+        // RETREAT
+        if (state == States.RETREAT) {
             currentTarget = targetBoat.getCurrentLocation();
             return;
         }
-        if (state == 3) {
+
+        // LOOTING
+        if (state == States.LOOTING) {
             currentTarget = targetBuilding.getLocation();
             return;
         }
-        if (state == 4) {
+
+        // INBOAT
+        if (state == States.INBOAT) {
             currentTarget = targetBoat.getTargetLocation();
+        }
+
+        // WAITING
+        if (state == States.WAITING) {
+            currentTarget = targetBuilding.getLocation();
         }
     }
 
@@ -228,15 +291,21 @@ public class Viking {
 
     public void findTargetEnemy() {
         boolean found = false;
-        if (state == 1 && (targetEnemy == null || targetEnemy.getHealth() == 0)) {
+        if (state == States.FIGHT && (targetEnemy == null || targetEnemy.getHealth() == 0)) {
+            if (targetEnemy != null && targetEnemy.getHealth() == 0) {
+                targetEnemy.unsetTargeted();
+                targetEnemy = null;
+            }
             if (distanceC(currentLocation.x, targetBuilding.getLocation().x, currentLocation.y, targetBuilding.getLocation().y) < 200) {
                 for (SquadVillagers i : enemies) {
                     for (Villager j : i.getVillagers()) {
-                        if (distanceC(targetBuilding.getLocation().x, j.getCurrentLocation().x, targetBuilding.getLocation().y, j.getCurrentLocation().y) < 40) {
-                            if (j.getTargeted() < 2) {
-                                targetEnemy = j;
-                                j.setTargeted();
-                                found = true;
+                        if (j.getHealth() > 0) {
+                            if (distanceC(targetBuilding.getLocation().x, j.getCurrentLocation().x, targetBuilding.getLocation().y, j.getCurrentLocation().y) < 40) {
+                                if (j.getTargeted() < 2) {
+                                    targetEnemy = j;
+                                    j.setTargeted();
+                                    found = true;
+                                }
                             }
                         }
                         if (found) return;
@@ -253,35 +322,40 @@ public class Viking {
         vector();
 
         // if dead
-        if (state == 0){
+        if (state == States.DEAD){
             return;
         }
 
         // if retreating or being on hills
-        if (state == 2 || map.getTerrainGrid()[currentLocation.x][currentLocation.y] == Colors.HILLS){
+        if (state == States.RETREAT || map.getTerrainGrid()[currentLocation.x][currentLocation.y] == Colors.HILLS){
             if (distanceFromTargetBoat() < targetBoat.getLength()*2) {
+                System.out.println("Getting on boat");
                 currentLocation.x = targetBoat.getCurrentLocation().x;
                 currentLocation.y = targetBoat.getCurrentLocation().y;
-                state = 4;
+                state = States.INBOAT;
                 return;
             }
             else {
+                System.out.println("Moving to boat");
                 move();
                 return;
             }
         }
 
         // if fighting
-        if (state == 1){
+        if (state == States.FIGHT){
             if (targetEnemy == null){
+                //System.out.println("Moving to building");
                 move();
                 return;
             }
             else if (distanceFromTargetEnemy() <= size + primeWeapon.getRange()) {
+                //System.out.println("Attacking");
                 attack();
                 return;
             }
             else {
+                //System.out.println("Moving to enemy");
                 move();
                 return;
             }
@@ -289,20 +363,21 @@ public class Viking {
         }
 
         // if looting
-        if (state == 3){
+        if (state == States.LOOTING){
             if (distanceFromTargetBuilding() <= targetBuilding.getHeight()/2 + size && loot < 3){
                 loot += targetBuilding.removeLoot();
-                System.out.println("looting");
+                //System.out.println("Looting");
                 return;
             }
             else {
+                //System.out.println("Moving to building");
                 move();
                 return;
             }
         }
 
         // if sailing
-        if (state == 4){
+        if (state == States.INBOAT){
             // get out of boat
             if (currentLocation.x == currentTarget.x && currentLocation.y == currentTarget.y){
                 Random r = new Random();
@@ -330,33 +405,40 @@ public class Viking {
                                 }
                             }
                             if (noColision) {
+                                //System.out.println("Getting of boat");
                                 currentLocation.x = location.x;
                                 currentLocation.y = location.y;
+                                state = States.WAITING;
                                 generated = true;
                             }
                         }
                     }
                 }
             }
+            //System.out.println("Sailing");
         }
     }
 
-    // BUGS WITH FLASHING ENEMIES
     private void attack() {
         // TODO: 16.01.17 Make attack system based on DH RP
         Random r = new Random();
         if (r.nextInt(101) < accuracy + primeWeapon.getAccuracy()){
             if (r.nextInt(101) >= targetEnemy.getDodge())
-                targetEnemy.damage(r.nextInt(5) + primeWeapon.getDamage(), primeWeapon.getPenetration());
+                targetEnemy.damage(r.nextInt(10) + primeWeapon.getDamage(), primeWeapon.getPenetration());
         }
     }
 
     public boolean onLand() {
-        return (state == 4 && map.getTerrainGrid()[currentLocation.x][currentLocation.y] != Colors.OCEAN);
+        estimateState();
+        return (state == States.WAITING);
     }
 
     // MOVING TEMP!!!
     public void move(){
+//        if (vector < 45 && vector >= -45) Up();
+//        if (vector < 135 && vector >= 45) Right();
+//        if (vector < -135 && vector >= 135) Down();
+//        if (vector < -45 && vector >= -135) Left();
         if (vector < 22.5 && vector >= -22.5) {
             moveUp();
             if (checkM()) return;
@@ -435,6 +517,174 @@ public class Viking {
             angle2 += 0.3925;
         }
         return true;
+    }
+
+    private void Left() {
+        //System.out.println("L");
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
+        moveLeft();
+//        if (!checkB()) {
+//            moveRight();
+//            moveRight();
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveRight();
+
+        moveDown();
+//        if (!checkB()) {
+//            moveUp();
+//            return;
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveUp();
+
+        moveUp();
+//        if (!checkB()) {
+//            moveDown();
+//            return;
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveDown();
+    }
+
+    private void Right() {
+        //System.out.println("R");
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
+        moveRight();
+//        if (!checkB()) {
+//            moveLeft();
+//            moveLeft();
+//            return;
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveLeft();
+
+        moveDown();
+//        if (!checkB()) {
+//            moveDown();
+//            return;
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveUp();
+
+        moveUp();
+//        if (!checkB()) {
+//            moveUp();
+//            return;
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveDown();
+
+    }
+
+    private void Up() {
+        //System.out.println("U");
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
+        moveUp();
+//        if (!checkB()) {
+//            moveDown();
+//            moveDown();
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveDown();
+
+        moveRight();
+//        if (!checkB()) {
+//            moveLeft();
+//            return;
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveLeft();
+
+        moveLeft();
+//        if (!checkB()) {
+//            moveRight();
+//            return;
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveRight();
+    }
+
+    private void Down() {
+        //System.out.println("D");
+        int zx = currentLocation.x;
+        int zy = currentLocation.y;
+        moveDown();
+//        if (!checkB()) {
+//            moveUp();
+//            moveUp();
+//            return;
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveUp();
+
+        moveLeft();
+//        if (!checkB()) {
+//            moveRight();
+//            return;
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveRight();
+
+        moveRight();
+//        if (!checkB()) {
+//            moveLeft();
+//            return;
+//        }
+        if (checkM()) {
+            previousLocation.x = zx;
+            previousLocation.y = zy;
+            return;
+        }
+        moveLeft();
+
     }
 
     private void moveUp(){

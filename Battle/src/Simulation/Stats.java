@@ -6,6 +6,7 @@ import Army.Viking;
 import Army.Villager;
 import Map.Building;
 import Schemes.Colors;
+import Schemes.States;
 
 import java.awt.*;
 
@@ -43,11 +44,11 @@ public class Stats {
             }
         }
         switch (generator.getVikings().getState()){
-            case 0 : vikingsState = "Loss";
+            case States.LOSS : vikingsState = "Loss";
                 break;
-            case 1 : vikingsState = "Win";
+            case States.WIN : vikingsState = "Win";
                 break;
-            case 2 : vikingsState = "Fighting";
+            case States.FIGHT : vikingsState = "Fighting";
                 break;
         }
 
@@ -67,11 +68,11 @@ public class Stats {
             lootInVillage += i.getLoot();
         }
         switch (generator.getVillagers().getState()){
-            case 0 : villagersState = "Loss";
+            case States.LOSS : villagersState = "Loss";
                 break;
-            case 1 : villagersState = "Win";
+            case States.WIN : villagersState = "Win";
                 break;
-            case 2 : villagersState = "Fighting";
+            case States.FIGHT : villagersState = "Fighting";
                 break;
         }
     }
@@ -92,11 +93,11 @@ public class Stats {
             }
         }
         switch (generator.getVikings().getState()){
-            case 0 : vikingsState = "Loss";
+            case States.LOSS : vikingsState = "Loss";
                 break;
-            case 1 : vikingsState = "Win";
+            case States.WIN : vikingsState = "Win";
                 break;
-            case 2 : vikingsState = "Fighting";
+            case States.FIGHT : vikingsState = "Fighting";
                 break;
         }
 
@@ -118,11 +119,11 @@ public class Stats {
             lootInVillage += i.getLoot();
         }
         switch (generator.getVillagers().getState()){
-            case 0 : villagersState = "Loss";
+            case States.LOSS : villagersState = "Loss";
                 break;
-            case 1 : villagersState = "Win";
+            case States.WIN : villagersState = "Win";
                 break;
-            case 2 : villagersState = "Fighting";
+            case States.FIGHT : villagersState = "Fighting";
                 break;
         }
     }

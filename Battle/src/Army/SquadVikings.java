@@ -3,6 +3,7 @@ package Army;
 import Fleet.Fleet;
 import Map.*;
 import Schemes.Colors;
+import Schemes.States;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class SquadVikings {
     private int size;
     private ArrayList<Viking> vikings;
     private Building target;
-    private int state;  //0-all_dead, 1-fight, 2-retreat, 3-looting
+    private int state;
 
     // Map information
     private Terrain map;
@@ -39,7 +40,7 @@ public class SquadVikings {
         this.size = r.nextInt(3) + 8;
         this.vikings = new ArrayList<>();
         this.target = target;
-        this.state = 1;
+        this.state = States.FIGHT;
 
         // Map information
         this.map = map;
@@ -89,6 +90,7 @@ public class SquadVikings {
         }
     }
 
+
     // Setters
     public void setEnemies(ArrayList<SquadVillagers> enemies) {
         this.enemies = enemies;
@@ -96,6 +98,12 @@ public class SquadVikings {
             i.setEnemies(enemies);
         }
     }
+
+    public void setState(int state) {
+        this.state = state;
+        for (Viking i : vikings) i.setState(state);
+    }
+
 
     // Getters
     public int getState() {
@@ -110,6 +118,7 @@ public class SquadVikings {
         return size;
     }
 
+
     // OTHERS FUNCTIONS
     public void estimateState(){
         // Update state of squads
@@ -118,10 +127,10 @@ public class SquadVikings {
         int dead = 0, counted = 0, retreated = 0;
         // All_dead
         for (Viking i : vikings) {
-            if (i.getState() == 0) dead ++;
+            if (i.getState() == States.DEAD) dead ++;
         }
         if (dead == vikings.size()) {
-            state = 0;
+            state = States.DEAD;
             return;
         }
 
@@ -129,32 +138,41 @@ public class SquadVikings {
         for (SquadVillagers i : enemies) {
             for (Villager j : i.getVillagers()) {
                 if (j.getHealth() > 0) {
-                    if (distanceC(target.getLocation().x, j.getCurrentLocation().x, target.getLocation().y, j.getCurrentLocation().y) < 50)
+                    if (distanceC(target.getLocation().x, j.getCurrentLocation().x, target.getLocation().y, j.getCurrentLocation().y) < 60)
                         counted++;
                 }
             }
         }
         if (counted < 2) {
-            state = 3;
+            state = States.LOOTING;
             return;
         }
 
         // Retreated
         for (Viking i : vikings){
-            if (i.getState() == 4) retreated ++;
+            if (i.getState() == States.RETREAT) retreated ++;
         }
         if (retreated == vikings.size() && target.getLoot() != 0){
-            state = 2;
+            state = States.RETREAT;
             return;
         }
 
         // Else figth
-        state = 1;
+        state = States.FIGHT;
     }
 
     public void action() {
-        updateTargetLocation();         //// TODO: 17.01.17 if not dead and only 3 of them
-        if (state == 3) for (Viking i : vikings) i.setState(3);
+        updateTargetLocation();             //// TODO: 17.01.17 if not dead and only 3 of them
+        int looting = 0;
+        if (state == States.LOOTING) {
+            for (Viking i : vikings) {
+                if (i.getState() != States.DEAD && i.getLoot() < 3) {
+                    i.setState(States.LOOTING);
+                    looting++;
+                }
+                if (looting > 3) break;
+            }
+        }
         for (Viking i : vikings) i.action();
     }
 
@@ -178,8 +196,4 @@ public class SquadVikings {
         for (Viking i: vikings) i.draw(g);
     }
 
-    public void setState(int state) {
-        this.state = state;
-        for (Viking i : vikings) i.setState(2);
-    }
 }

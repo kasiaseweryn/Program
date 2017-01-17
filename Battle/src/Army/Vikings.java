@@ -2,6 +2,7 @@ package Army;
 
 import Fleet.Fleet;
 import Map.*;
+import Schemes.States;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import static java.lang.Math.*;
 
 public class Vikings {
     private ArrayList<SquadVikings> squads;
-    private int state;                          //0-loss, 1-win, 2-fight
+    private int state;                          //0-loss, 1-win, 2-fight, 3-ended looting
 
     private Terrain map;
     private Village village;
@@ -26,7 +27,7 @@ public class Vikings {
 
         // Initializing
         this.squads = new ArrayList<>();
-        this.state = 2;
+        this.state = States.FIGHT;
 
         this.map = map;
         this.village = village;
@@ -57,16 +58,20 @@ public class Vikings {
     // OTHER FUNCTIONS
     public void estimateState(){
         // Update state of squads
-        for (SquadVikings i : squads) i.estimateState();
+        for (SquadVikings i : squads) {
+            i.estimateState();
+            System.out.println(i.getState());
+        }
 
         int lost = 0, retreated = 0, looted = 0, defeated = 0;
+
         // Losing statement
         for (SquadVikings i : squads) {
-            if (i.getState() == 0) lost ++;
-            if (i.getState() == 2) retreated++;
+            if (i.getState() == States.DEAD) lost ++;
+            if (i.getState() == States.RETREAT) retreated++;
         }
         if (lost == squads.size()) {
-            state = 0;
+            state = States.LOSS;
             return;
         }
 
@@ -75,14 +80,14 @@ public class Vikings {
             int size = 0, alive = 0;
             for (SquadVikings i : squads) {
                 size += i.getSize();
-                if (i.getState() == 2) {
+                if (i.getState() == States.RETREAT) {
                     for (Viking j : i.getVikings()) {
-                        if (j.getState() != 0) alive++;
+                        if (j.getState() != States.DEAD) alive++;
                     }
                 }
             }
             if (alive < size/2){
-                state = 0;
+                state = States.LOSS;
                 return;
             }
             // TODO: 16.01.17 make else to set that after regrouping they attack
@@ -91,26 +96,26 @@ public class Vikings {
         // Winning statement
         for (Building i : village.getBuildings()) if (i.getLoot() == 0) looted ++;
         // todo check if vikings are away from village
-        for (SquadVillagers i : enemies) if (i.getState() == 0) defeated ++;
+        for (SquadVillagers i : enemies) if (i.getState() == States.DEAD) defeated ++;
         if (looted == village.getBuildings().size() || defeated == enemies.size()) {
-            state = 1;
+            state = States.WIN;
             return;
         }
 
         // Else figth
-        state = 2;
+        state = States.FIGHT;
     }
 
     // Actions based on state
     public void action() {
         estimateState();
         switch (state){
-            case 0 : fleet.returnToBase();
+            case States.LOSS : fleet.returnToBase();
                 break;
-            case 1 : fleet.returnToBase();
-                for (SquadVikings i : squads) i.setState(2);
+            case States.WIN : fleet.returnToBase();
+                for (SquadVikings i : squads) i.setState(States.RETREAT);
                 break;
-            case 2 :
+            case States.FIGHT :
                 break;
         }
         fleet.action();
