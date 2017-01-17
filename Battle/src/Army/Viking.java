@@ -10,6 +10,7 @@ import Schemes.Weapons;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Random;
 
 import static Colision.Distance.distanceC;
@@ -64,9 +65,9 @@ public class Viking {
         this.health = 100;
         this.moral = 100;
         this.moralThreshold = r.nextInt(11) + 20;
-        this.defense = r.nextInt(4) + 2;
+        this.defense = r.nextInt(3) + 1;
         this.accuracy = r.nextInt(31) + 30;
-        this.dodge = r.nextInt(11) + 10;
+        this.dodge = r.nextInt(21) + 10;
         this.loot = 0;
         this.state = 1;
         this.targeted = 0;
@@ -230,11 +231,11 @@ public class Viking {
 
     public void findTargetEnemy() {
         boolean found = false;
-        if (state == 1) {
+        if (state == 1 && (targetEnemy == null || targetEnemy.getHealth() == 0)) {
             if (distanceC(currentLocation.x, targetBuilding.getLocation().x, currentLocation.y, targetBuilding.getLocation().y) < 200) {
                 for (SquadVillagers i : enemies) {
                     for (Villager j : i.getVillagers()) {
-                        if (distanceC(targetBuilding.getLocation().x, j.getCurrentLocation().x, targetBuilding.getLocation().y, j.getCurrentLocation().y) < 100) {
+                        if (distanceC(targetBuilding.getLocation().x, j.getCurrentLocation().x, targetBuilding.getLocation().y, j.getCurrentLocation().y) < 40) {
                             if (j.getTargeted() < 2) {
                                 targetEnemy = j;
                                 j.setTargeted();
@@ -274,21 +275,17 @@ public class Viking {
         }
 
         // if fighting
-        // TODO: 16.01.17 BUGS HERE
         if (state == 1){
             if (targetEnemy == null){
                 move();
-                System.out.println("Move to building");
                 return;
             }
-            else if (distanceFromTargetEnemy() <= primeWeapon.getRange()) {
+            else if (distanceFromTargetEnemy() <= size + primeWeapon.getRange()) {
                 attack();
-                System.out.println("attacking");
                 return;
             }
             else {
                 move();
-                System.out.println("Move to enemy");
                 return;
             }
 
@@ -296,14 +293,13 @@ public class Viking {
 
         // if looting
         if (state == 3){
-            if (distanceFromTargetBuilding() <= targetBuilding.getHeight()/2 && loot < 3){
-                loot += targetBuilding.getLoot();
-                //System.out.println("looting");
+            if (distanceFromTargetBuilding() <= targetBuilding.getHeight()/2 + size && loot < 3){
+                loot += targetBuilding.removeLoot();
+                System.out.println("looting");
                 return;
             }
             else {
                 move();
-                //System.out.println("moving to building");
                 return;
             }
         }
@@ -318,13 +314,13 @@ public class Viking {
                 // generating random point in radius of a boat
                 while (!generated) {
                     double angle = toRadians(random() * 360);
-                    double radius = r.nextDouble() + targetBoat.getLength()*1.2;
+                    double radius = r.nextDouble() + r.nextInt((int) (targetBoat.getLength())) + targetBoat.getLength()/2;
                     location.x = currentLocation.x + (int) (radius * cos(angle));
                     location.y = currentLocation.y + (int) (radius * sin(angle));
                     // if in bounds
-                    if (location.x > 0 && location.y > 0 && location.x < map.numRows && location.y < map.numCols) {
+                    if (location.x - size > 0 && location.y - size > 0 && location.x < map.numRows + size && location.y < map.numCols + size) {
                         // if on land
-                        if (map.getTerrainGrid()[location.x][location.y] != Colors.OCEAN) {
+                        if (checkExit(location)) {
                             // checking for vikings
                             noColision = true;
                             double spread = 1.1;
@@ -348,9 +344,21 @@ public class Viking {
         }
     }
 
+    // BUGS WITH FLASHING ENEMIES
     private void attack() {
-        System.out.println("Damage!!");
         // TODO: 16.01.17 Make attack system based on DH RP
+        Random r = new Random();
+        if (r.nextInt(101) < accuracy + primeWeapon.getAccuracy()){
+            if (r.nextInt(101) < targetEnemy.getDodge()){
+                return;
+            }
+            else {
+                targetEnemy.damage(r.nextInt(5) + primeWeapon.getDamage(), primeWeapon.getPenetration());
+                return;
+            }
+        }
+        else return;
+
     }
 
     public boolean onLand() {
@@ -361,44 +369,51 @@ public class Viking {
     public void move(){
         if (vector < 22.5 && vector >= -22.5) {
             moveUp();
-            if (checkM()) return;
+            if (check()) return;
             else moveDown();
         }
         if (vector < 67.5 && vector >= 22.5) {
             moveUpRight();
-            if (checkM()) return;
+            if (check()) return;
             else moveDownLeft();
         }
         if (vector < 112.5 && vector >= 67.5) {
             moveRight();
-            if (checkM()) return;
+            if (check()) return;
             else moveLeft();
         }
         if (vector < 157.5 && vector >= 112.5) {
             moveDownRight();
-            if (checkM()) return;
+            if (check()) return;
             else moveUpLeft();
         }
         if (vector < -157.5 && vector >= 157.5) {
             moveDown();
-            if (checkM()) return;
+            if (check()) return;
             else moveUp();
         }
         if (vector < -112.5 && vector >= -157.5) {
             moveDownLeft();
-            if (checkM()) return;
+            if (check()) return;
             else moveUpRight();
         }
         if (vector < -67.5 && vector >= -112.5) {
             moveLeft();
-            if (checkM()) return;
+            if (check()) return;
             else moveRight();
         }
         if (vector < -22.5 && vector >= -67.5) {
             moveUpLeft();
-            if (checkM()) return;
+            if (check()) return;
             else moveDownRight();
         }
+    }
+
+    private boolean checkB(){
+        for (Building i : village.getBuildings()){
+            if (distanceFromTargetBuilding() < size/2 + targetBuilding.getHeight()/2 ) return false;
+        }
+        return true;
     }
 
     private boolean checkM(){
@@ -410,6 +425,21 @@ public class Viking {
         double angle2 = 0;
         while (angle2 < 6.3) {
             if (map.getTerrainGrid()[currentLocation.x + (int) (size/2 * cos(angle2))][currentLocation.y + (int) (size/2 * sin(angle2))] == Colors.OCEAN) {
+                return false;
+            }
+            angle2 += 0.3925;
+        }
+        return true;
+    }
+
+    private boolean check(){
+        return (checkB() && checkM());
+    }
+
+    private boolean checkExit( Point location){
+        double angle2 = 0;
+        while (angle2 < 6.3) {
+            if (map.getTerrainGrid()[location.x + (int) (size/2 * cos(angle2))][location.y + (int) (size/2 * sin(angle2))] == Colors.OCEAN) {
                 return false;
             }
             angle2 += 0.3925;

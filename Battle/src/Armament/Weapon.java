@@ -8,13 +8,13 @@ import static java.lang.Math.toRadians;
 
 public class Weapon {
     private int range;
-    private int accurency;
+    private int accuracy;
     private int damage;
     private int penetration;
 
-    public Weapon(int range, int accurency, int damage, int penetration ){
+    public Weapon(int range, int accuracy, int damage, int penetration ){
         this.range = range;
-        this.accurency = accurency;
+        this.accuracy = accuracy;
         this.damage = damage;
         this.penetration = penetration;
     }
@@ -28,5 +28,17 @@ public class Weapon {
 
     public int getRange() {
         return range;
+    }
+
+    public int getAccuracy() {
+        return accuracy;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getPenetration() {
+        return penetration;
     }
 }

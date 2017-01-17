@@ -3,12 +3,12 @@ package Schemes;
 import Armament.Weapon;
 
 public class Weapons {
-    //Declaration of weapons   For now values just estimated
-    public static final Weapon SPEAR = new Weapon(2,3,1,3);
-    public static final Weapon SWORD = new Weapon(1,5,2,2);
-    public static final Weapon AXE  = new Weapon(1,5,2,2);
+    //Declaration of weapons   For now values just estimated  R A D P
+    public static final Weapon SPEAR = new Weapon(2,3,2,3);
+    public static final Weapon SWORD = new Weapon(1,5,3,2);
+    public static final Weapon AXE  = new Weapon(1,5,3,2);
     public static final Weapon DOUBLE_AXE = new Weapon(2,3,5,3);
-    public static final Weapon BOW = new Weapon(30,7,3,0);
+    public static final Weapon BOW = new Weapon(30,7,2,0);
 
     public static final Weapon[] ARSENAL = {
             SPEAR,

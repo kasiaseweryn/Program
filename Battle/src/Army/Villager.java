@@ -57,9 +57,9 @@ public class Villager {
         // Stats for battle
         this.health = 100;
         this.moral = r.nextInt(21) + 40;
-        this.defense = r.nextInt(4) + 2;
+        this.defense = r.nextInt(3) + 1;
         this.accuracy = r.nextInt(31) + 30;
-        this.dodge = r.nextInt(11) + 10;
+        this.dodge = r.nextInt(21) + 10;
         this.loot = 0;
         this.state = 1;
         this.targeted = 0;
@@ -128,6 +128,20 @@ public class Villager {
         return targeted;
     }
 
+    public int getDodge() {
+        return dodge;
+    }
+
+    public void damage(int damage, int penetration) {
+        int def = defense;
+        if (shield != null ) def += shield.getDefense();
+        def = defense - penetration;
+        if (def < 0) def = 0;
+        if (def > damage) return;
+        health -= (damage - def);
+        if (health < 0) health = 0;
+    }
+
     // OTHER FUNTIONS
 
     public void estimateState() {
@@ -139,15 +153,17 @@ public class Villager {
 
     // Drawing
     public void draw(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g.create();
-        // Villager
-        g2d.setColor(color);
-        g2d.rotate(toRadians(vector), currentLocation.x, currentLocation.y);
-        g2d.fillOval(currentLocation.x - size/2, currentLocation.y - size/2, size, size);
-        // Weapon
-        primeWeapon.draw(g, currentLocation, size, vector);
-        // Shield
-        if (shield != null) shield.draw(g, currentLocation, size, vector + shieldDirection);
+        if (health > 0) {
+            Graphics2D g2d = (Graphics2D) g.create();
+            // Villager
+            g2d.setColor(color);
+            g2d.rotate(toRadians(vector), currentLocation.x, currentLocation.y);
+            g2d.fillOval(currentLocation.x - size / 2, currentLocation.y - size / 2, size, size);
+            // Weapon
+            primeWeapon.draw(g, currentLocation, size, vector);
+            // Shield
+            if (shield != null) shield.draw(g, currentLocation, size, vector + shieldDirection);
+        }
     }
 
 }

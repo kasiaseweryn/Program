@@ -128,7 +128,10 @@ public class SquadVikings {
         // Looting
         for (SquadVillagers i : enemies) {
             for (Villager j : i.getVillagers()) {
-                if (distanceC(target.getLocation().x, j.getCurrentLocation().x, target.getLocation().y, j.getCurrentLocation().y) < map.numCols / 25) counted++;
+                if (j.getHealth() > 0) {
+                    if (distanceC(target.getLocation().x, j.getCurrentLocation().x, target.getLocation().y, j.getCurrentLocation().y) < 50)
+                        counted++;
+                }
             }
         }
         if (counted < 2) {
@@ -151,7 +154,8 @@ public class SquadVikings {
     }
 
     public void action() {
-        updateTargetLocation();
+        updateTargetLocation();         //// TODO: 17.01.17 if not dead and only 3 of them
+        if (state == 3) for (Viking i : vikings) i.setState(3);
         for (Viking i : vikings) i.action();
     }
 
@@ -173,5 +177,10 @@ public class SquadVikings {
     // Drawing
     public void draw(Graphics g) {
         for (Viking i: vikings) i.draw(g);
+    }
+
+    public void setState(int state) {
+        this.state = state;
+        for (Viking i : vikings) i.setState(2);
     }
 }

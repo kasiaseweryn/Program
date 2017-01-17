@@ -33,6 +33,7 @@ public class Simulator extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         // Important to call super class method
+        super.paintComponent(g);
         generator.draw(g);
         stats.draw(g);
         repaint();

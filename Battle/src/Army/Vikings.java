@@ -109,6 +109,7 @@ public class Vikings {
             case 0 : fleet.returnToBase();
                 break;
             case 1 : fleet.returnToBase();
+                for (SquadVikings i : squads) i.setState(2);
                 break;
             case 2 :
                 break;

@@ -12,7 +12,7 @@ import static java.lang.Math.toRadians;
  */
 public class Shield {
     Random r = new Random();
-    private int defence = r.nextInt(3) + 1;
+    private int defense = r.nextInt(2) + 1;
 
     public Shield(){
     }
@@ -22,5 +22,9 @@ public class Shield {
         g2d.setColor(Colors.SHIELD);
         g2d.rotate(toRadians(vector), location.x, location.y);
         g2d.fillRect(location.x - size / 4, location.y - size / 2, size / 2, size / 4);
+    }
+
+    public int getDefense() {
+        return defense;
     }
 }
