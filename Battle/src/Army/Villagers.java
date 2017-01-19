@@ -75,6 +75,7 @@ public class Villagers {
 
     // Actions based on state
     public void action(){
+        estimateState();
         for (SquadVillagers i : squads) {
             if (state == States.FIGHT) i.action();
         }

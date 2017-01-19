@@ -11,7 +11,7 @@ import static java.lang.Math.*;
 
 public class Vikings {
     private ArrayList<SquadVikings> squads;
-    private int state;                          //0-loss, 1-win, 2-fight, 3-ended looting
+    private int state;
 
     private Terrain map;
     private Village village;
@@ -50,18 +50,26 @@ public class Vikings {
         }
     }
 
+
     // Getters
     public ArrayList<SquadVikings> getSquads() {
         return squads;
     }
+
+
+    public int getState() {
+        return state;
+    }
+
 
     // OTHER FUNCTIONS
     public void estimateState(){
         // Update state of squads
         for (SquadVikings i : squads) {
             i.estimateState();
-            System.out.println(i.getState());
+            //System.out.print(i.getState());
         }
+        //System.out.println('\n');
 
         int lost = 0, retreated = 0, looted = 0, defeated = 0;
 
@@ -75,7 +83,7 @@ public class Vikings {
             return;
         }
 
-        // Fight or loss
+        // Regruping or retreating
         if (retreated != 0 && lost + retreated == squads.size()){
             int size = 0, alive = 0;
             for (SquadVikings i : squads) {
@@ -90,12 +98,16 @@ public class Vikings {
                 state = States.LOSS;
                 return;
             }
-            // TODO: 16.01.17 make else to set that after regrouping they attack
+            else {
+                state = States.FIGHT;
+                for (SquadVikings i : squads)
+                    i.setReAttack();
+                return;
+            }
         }
 
         // Winning statement
         for (Building i : village.getBuildings()) if (i.getLoot() == 0) looted ++;
-        // todo check if vikings are away from village
         for (SquadVillagers i : enemies) if (i.getState() == States.DEAD) defeated ++;
         if (looted == village.getBuildings().size() || defeated == enemies.size()) {
             state = States.WIN;
@@ -109,17 +121,25 @@ public class Vikings {
     // Actions based on state
     public void action() {
         estimateState();
+        fleet.estimateState();
+
         switch (state){
-            case States.LOSS : fleet.returnToBase();
+            case States.LOSS :
+                fleet.returnToBase();
+                for (SquadVikings i : squads) i.setLoss();
                 break;
-            case States.WIN : fleet.returnToBase();
-                for (SquadVikings i : squads) i.setState(States.RETREAT);
+            case States.WIN :
+                fleet.returnToBase();
+                for (SquadVikings i : squads) i.setWin();
                 break;
             case States.FIGHT :
                 break;
         }
+
         fleet.action();
-        for (SquadVikings i : squads) i.action();
+        for (SquadVikings i : squads) {
+            i.action();
+        }
     }
 
     // Drawing
@@ -127,7 +147,4 @@ public class Vikings {
         for (SquadVikings i:squads) i.draw(g);
     }
 
-    public int getState() {
-        return state;
-    }
 }

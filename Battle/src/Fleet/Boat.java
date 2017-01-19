@@ -8,7 +8,9 @@ import Map.Terrain;
 import java.awt.*;
 import java.util.ArrayList;
 
+import static Colision.Direction.direction;
 import static Colision.Distance.*;
+import static Colision.Moving.*;
 import static java.lang.Math.*;
 
 public class Boat {
@@ -25,7 +27,8 @@ public class Boat {
     private int length;
     private Terrain map;
     private ArrayList<Boat> boats;
-    private int state;  //0 - waiting, 1 - going
+    private int state;
+    private int direction;
 
     public Boat(Terrain map, Point location, int width, int length, int size, ArrayList<Boat> boats){
         this.size = size;
@@ -111,6 +114,14 @@ public class Boat {
         return targetLocation;
     }
 
+    public int getDirection() {
+        return direction;
+    }
+
+    public Point getStartLocation() {
+        return startLocation;
+    }
+
 
     // OTHER FUNCTIONS
     public void returnToBase() {
@@ -124,25 +135,31 @@ public class Boat {
     public void estimateState(){
         int counted = 0;
         for (Viking i : vikings){
-
-            if (i.getState() == States.DEAD || i.getState() == States.INBOAT || i.getState() == States.WAITING) counted++;
+            if (i.getInBoat() || i.getState() == States.WAITING) counted++;
         }
         if (counted == vikings.size()) state = 1;
         else state = 0;
     }
 
+
     // MOVING
     private void vector(){
         vector = -(int) (atan2(currentLocation.x - targetLocation.x, currentLocation.y - targetLocation.y)*(180/PI));
+        direction = direction(vector);
     }
 
     public void move() {
         if (currentLocation.x != targetLocation.x || currentLocation.y != targetLocation.y) {
             this.vector();
-            if (vector < 45 && vector >= -45) Up();
-            if (vector < 135 && vector >= 45) Right();
-            if (vector < -135 && vector >= 135) Down();
-            if (vector < -45 && vector >= -135) Left();
+
+            if (direction == Directions.UP) Up();
+            if (direction == Directions.UPRIGHT) UpRight();
+            if (direction == Directions.RIGHT) Right();
+            if (direction == Directions.DOWNRIGHT) DownRight();
+            if (direction == Directions.DOWN) Down();
+            if (direction == Directions.DOWNLEFT) DownLeft();
+            if (direction == Directions.LEFT) Left();
+            if (direction == Directions.UPLEFT) UpLeft();
 
             for (Viking i : vikings){
                 i.getCurrentLocation().x = currentLocation.x;
@@ -154,8 +171,8 @@ public class Boat {
     private boolean checkB() {
         for (Boat i:boats) {
             if (i != this) {
-                double distance = distanceC((currentLocation.x +(width/2)),(i.currentLocation.x +(i.width/2)), (currentLocation.y +(this.length/2)), (i.currentLocation.y +(i.length/2)));
-                if (distance < length/2 + i.length/2) return false;
+                double distance = distanceC((currentLocation.x +(width/2)),(i.currentLocation.x +(i.width/2)), (currentLocation.y +(length/2)), (i.currentLocation.y +(i.length/2)));
+                if (distance <= length/2 + i.getLength()/2 && i.getDirection() < direction - 1) return false;
             }
         }
         return true;
@@ -178,213 +195,199 @@ public class Boat {
         return true;
     }
 
+    private boolean check(){
+        return (checkM() /*&& checkB()*/);
+    }
+
     private void setPreviousLocation(int x, int y){
         previousLocation.x = x;
         previousLocation.y = y;
     }
 
+
     private void Left() {
-        //System.out.println("L");
-        int zx = currentLocation.x;
-        int zy = currentLocation.y;
-        moveLeft();
-//        if (!checkB()) {
-//            moveRight();
-//            moveRight();
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
-        }
-        moveRight();
-
-        moveDown();
-//        if (!checkB()) {
-//            moveUp();
-//            return;
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
-        }
-        moveUp();
-
-        moveUp();
-//        if (!checkB()) {
-//            moveDown();
-//            return;
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
-        }
-        moveDown();
+        int x = currentLocation.x;
+        int y = currentLocation.y;
+        if (!tryLeft(x,y))
+            if (!tryDownLeft(x,y))
+                if (!tryUpLeft(x,y))
+                    if (!tryDown(x,y))
+                        if (!tryUp(x,y))
+                            if (!tryDownRight(x,y))
+                                if (!tryUpRight(x,y))
+                                    tryRight(x,y);
     }
 
     private void Right() {
-        //System.out.println("R");
-        int zx = currentLocation.x;
-        int zy = currentLocation.y;
-        moveRight();
-//        if (!checkB()) {
-//            moveLeft();
-//            moveLeft();
-//            return;
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
-        }
-        moveLeft();
-
-        moveDown();
-//        if (!checkB()) {
-//            moveDown();
-//            return;
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
-        }
-        moveUp();
-
-        moveUp();
-//        if (!checkB()) {
-//            moveUp();
-//            return;
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
-        }
-        moveDown();
-
+        int x = currentLocation.x;
+        int y = currentLocation.y;
+        if (!tryRight(x,y))
+            if (!tryDownRight(x,y))
+                if (!tryUpRight(x,y))
+                    if (!tryDown(x,y))
+                        if (!tryUp(x,y))
+                            if (!tryDownLeft(x,y))
+                                if (!tryUpLeft(x,y))
+                                    tryLeft(x,y);
     }
 
     private void Up() {
-        //System.out.println("U");
-        int zx = currentLocation.x;
-        int zy = currentLocation.y;
-        moveUp();
-//        if (!checkB()) {
-//            moveDown();
-//            moveDown();
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
-        }
-        moveDown();
-
-        moveRight();
-//        if (!checkB()) {
-//            moveLeft();
-//            return;
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
-        }
-        moveLeft();
-
-        moveLeft();
-//        if (!checkB()) {
-//            moveRight();
-//            return;
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
-        }
-        moveRight();
+        int x = currentLocation.x;
+        int y = currentLocation.y;
+        if (!tryUp(x,y))
+            if (!tryUpRight(x,y))
+                if (!tryUpLeft(x,y))
+                    if (!tryRight(x,y))
+                        if (!tryLeft(x,y))
+                            if (!tryDownRight(x,y))
+                                if (!tryUpLeft(x,y))
+                                    tryDown(x,y);
     }
 
     private void Down() {
-        //System.out.println("D");
-        int zx = currentLocation.x;
-        int zy = currentLocation.y;
-        moveDown();
-//        if (!checkB()) {
-//            moveUp();
-//            moveUp();
-//            return;
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
+        int x = currentLocation.x;
+        int y = currentLocation.y;
+        if (!tryDown(x,y))
+            if (!tryDownRight(x,y))
+                if (!tryDownLeft(x,y))
+                    if (!tryRight(x,y))
+                        if (!tryLeft(x,y))
+                            if (!tryUpRight(x,y))
+                                if (!tryUpLeft(x,y))
+                                    tryUp(x,y);
+    }
+
+    private void UpRight() {
+        int x = currentLocation.x;
+        int y = currentLocation.y;
+        if (!tryUpRight(x,y))
+            if (!tryRight(x,y))
+                if (!tryUp(x,y))
+                    if (!tryDownRight(x,y))
+                        if (!tryUpLeft(x,y))
+                            if (!tryDown(x,y))
+                                if (!tryLeft(x,y))
+                                    tryDownLeft(x,y);
+    }
+
+    private void DownRight() {
+        int x = currentLocation.x;
+        int y = currentLocation.y;
+        if (!tryDownRight(x,y))
+            if (!tryDown(x,y))
+                if (!tryRight(x,y))
+                    if (!tryDownLeft(x,y))
+                        if (!tryUpRight(x,y))
+                            if (!tryLeft(x,y))
+                                if (!tryUp(x,y))
+                                    tryUpLeft(x,y);
+    }
+
+    private void UpLeft() {
+        int x = currentLocation.x;
+        int y = currentLocation.y;
+        if (!tryUpLeft(x,y))
+            if (!tryLeft(x,y))
+                if (!tryUp(x,y))
+                    if (!tryDownLeft(x,y))
+                        if (!tryUpRight(x,y))
+                            if (!tryDown(x,y))
+                                if (!tryRight(x,y))
+                                    tryDownRight(x,y);
+    }
+
+    private void DownLeft() {
+        int x = currentLocation.x;
+        int y = currentLocation.y;
+        if (!tryDownLeft(x,y))
+            if (!tryDown(x,y))
+                if (!tryLeft(x,y))
+                    if (!tryDownRight(x,y))
+                        if (!tryUpLeft(x,y))
+                            if (!tryRight(x,y))
+                                if (!tryUp(x,y))
+                                    tryUpRight(x,y);
+    }
+
+
+    private boolean tryUp(int x, int y){
+        moveUp(currentLocation);
+        if (check()) {
+            setPreviousLocation(x,y);
+            return true;
         }
-        moveUp();
+        moveDown(currentLocation);
+        return false;
+    }
 
-        moveLeft();
-//        if (!checkB()) {
-//            moveRight();
-//            return;
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
+    private boolean tryDown(int x, int y){
+        moveDown(currentLocation);
+        if (check()) {
+            setPreviousLocation(x,y);
+            return true;
         }
-        moveRight();
+        moveUp(currentLocation);
+        return false;
+    }
 
-        moveRight();
-//        if (!checkB()) {
-//            moveLeft();
-//            return;
-//        }
-        if (checkM()) {
-            previousLocation.x = zx;
-            previousLocation.y = zy;
-            return;
+    private boolean tryLeft(int x, int y){
+        moveLeft(currentLocation);
+        if (check()) {
+            setPreviousLocation(x,y);
+            return true;
         }
-        moveLeft();
-
+        moveRight(currentLocation);
+        return false;
     }
 
-    private void moveUp(){
-        currentLocation.y -= speed;
+    private boolean tryRight(int x, int y){
+        moveRight(currentLocation);
+        if (check()) {
+            setPreviousLocation(x,y);
+            return true;
+        }
+        moveLeft(currentLocation);
+        return false;
     }
 
-    private void moveDown(){
-        currentLocation.y += speed;
+    private boolean tryUpLeft(int x, int y){
+        moveUpLeft(currentLocation);
+        if (check()) {
+            setPreviousLocation(x,y);
+            return true;
+        }
+        moveDownRight(currentLocation);
+        return false;
     }
 
-    private void moveRight(){
-        currentLocation.x += speed;
+    private boolean tryUpRight(int x, int y){
+        moveUpRight(currentLocation);
+        if (check()) {
+            setPreviousLocation(x,y);
+            return true;
+        }
+        moveDownLeft(currentLocation);
+        return false;
     }
 
-    private void moveLeft(){
-        currentLocation.x -= speed;
+    private boolean tryDownLeft(int x, int y){
+        moveDownLeft(currentLocation);
+        if (check()) {
+            setPreviousLocation(x,y);
+            return true;
+        }
+        moveUpRight(currentLocation);
+        return false;
     }
 
-    private void moveUpRight() {
-        currentLocation.x += speed;
-        currentLocation.y -= speed;
-    }
-
-    private void moveUpLeft(){
-        currentLocation.x -= speed;
-        currentLocation.y -= speed;
-    }
-
-    private void moveDownRight(){
-        currentLocation.x += speed;
-        currentLocation.y += speed;
-    }
-
-    private void moveDownLeft(){
-        currentLocation.x -= speed;
-        currentLocation.y += speed;
+    private boolean tryDownRight(int x, int y){
+        moveDownRight(currentLocation);
+        if (check()) {
+            setPreviousLocation(x,y);
+            return true;
+        }
+        moveUpLeft(currentLocation);
+        return false;
     }
 
     //Drawing
@@ -402,4 +405,5 @@ public class Boat {
         // Start
         g.fillRect(startLocation.x, startLocation.y, 3, 3);
     }
+
 }

@@ -131,12 +131,14 @@ public class Villager {
         return dodge;
     }
 
+
+
     public void damage(int damage, int penetration) {
         int def = defense;
         if (shield != null ) def += shield.getDefense();
         def = defense - penetration;
         if (def < 0) def = 0;
-        if (def > damage) return;
+        if (def >= damage) return;
         health -= (damage - def);
         if (health < 0) health = 0;
     }
