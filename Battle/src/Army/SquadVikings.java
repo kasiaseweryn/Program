@@ -147,7 +147,7 @@ public class SquadVikings {
                 break;
             case States.FIGHT:
                 for (Viking i : vikings) {
-                    if (i.getState() == States.RETREAT || (i.getState() == States.INBOAT && i.getCurrentLocation() == i.getTargetBoat().getTargetLocation())) retreated++;
+                    if (i.getState() == States.RETREAT) retreated++;
                     if (i.getState() == States.DEAD) dead ++;
                 }
                 if (dead == vikings.size()) state = States.DEAD;
@@ -208,7 +208,7 @@ public class SquadVikings {
                     // If found less then 2 enemies set some vikings to loot
                     if (counted == 0) {
                         for (Viking i : vikings){
-                            if (i.getState() != States.DEAD && i.getState() != States.INBOAT && i.getState() != States.RETREAT && i.getLoot() < 2){
+                            if (i.getState() != States.DEAD && !i.getInBoat() && i.getState() != States.RETREAT && i.getLoot() < 2){
                                 i.setLooting();
                                 looting++;
                             }

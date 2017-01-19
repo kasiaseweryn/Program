@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static Colision.Distance.distanceC;
-import static Colision.Direction.direction;
+import static Colision.Direction.*;
 import static Colision.Moving.*;
 import static java.lang.Math.*;
 
@@ -45,6 +45,7 @@ public class Viking {
     private ArrayList<ThrownWeapon> thrownWeapons;
     private Shield shield;
     private int shieldDirection;
+    private int shieldAtBack;
 
     // Drawing
     private int size;
@@ -89,6 +90,7 @@ public class Viking {
         if ( r.nextInt(101) > 50 ) this.shield = new Shield();
         else this.shield = null;
         this.shieldDirection = - (r.nextInt(61) + 30);
+        this.shieldAtBack = -180;
 
         // Drawing
         this.size = size;
@@ -119,7 +121,8 @@ public class Viking {
         //  Setting currentTarget to boat
         this.currentTarget = targetBoat.getCurrentLocation();
 
-        vector();
+        vector = vector(currentLocation, currentTarget);
+        direction = direction(vector);
     }
 
 
@@ -134,7 +137,7 @@ public class Viking {
 
     // Changing states
     public boolean setLooting() {
-        if (state != States.DEAD && state != States.INBOAT && state != States.RETREAT) {
+        if (state != States.DEAD && state != States.RETREAT) {
             state = States.LOOTING;
             return true;
         }
@@ -162,10 +165,6 @@ public class Viking {
 
     public void setFighting() {
         if (state != States.DEAD && state != States.LOSS && state != States.WIN) state = States.FIGHT;
-    }
-
-    public void setComeBack() {
-        if (state != States.DEAD) state = States.WIN;
     }
 
     // Changing state of being targeted
@@ -203,6 +202,7 @@ public class Viking {
         return inBoat;
     }
 
+
     // OTHER FUNCTIONS
 
     // Moral
@@ -232,10 +232,6 @@ public class Viking {
                 if (targetBuilding.getLoot() == 0 || loot == 2)
                     state = States.FIGHT;
                 break;
-            case States.INBOAT :
-                if (map.getTerrainGrid()[currentLocation.x][currentLocation.y] != Colors.OCEAN)
-                    state = States.WAITING;
-                break;
             case States.WAITING:
                 break;
             case States.WIN:
@@ -255,7 +251,7 @@ public class Viking {
 
     public boolean onLand() {
         estimateState();
-        return (state == States.WAITING);
+        return (state == States.WAITING || state == States.DEAD);
     }
 
     // Updating currentTarget based on state // TODO: 19.01.17  
@@ -278,44 +274,39 @@ public class Viking {
             case States.LOOTING:
                 currentTarget = targetBuilding.getLocation();
                 break;
-            case States.INBOAT:
-                currentTarget = targetBoat.getTargetLocation();
-                break;
             case States.WAITING:
                 currentTarget = targetBuilding.getLocation();
                 break;
             case States.LOSS:
-                if (inBoat)
-                    currentTarget = targetBoat.getTargetLocation();
-                else if (map.getTerrainGrid()[currentLocation.x][currentLocation.y] == Colors.HILLS)
+                if (map.getTerrainGrid()[currentLocation.x][currentLocation.y] == Colors.HILLS)
                     currentTarget = new Point(900,900);
                 else
                     currentTarget = targetBoat.getCurrentLocation();
                 break;
             case States.WIN:
-                if (inBoat)
-                    currentTarget = targetBoat.getTargetLocation();
-                else if (map.getTerrainGrid()[currentLocation.x][currentLocation.y] == Colors.HILLS)
+                if (map.getTerrainGrid()[currentLocation.x][currentLocation.y] == Colors.HILLS)
                     currentTarget = new Point(900,900);
                 else
                     currentTarget = targetBoat.getCurrentLocation();
                 break;
         }
+        if (inBoat) currentTarget = targetBoat.getTargetLocation();
     }
 
     public void findTargetEnemy() {
         boolean found = false;
-        // If fighting
+        // If fighting find target
         if (state == States.FIGHT && (targetEnemy == null || targetEnemy.getHealth() == 0)) {
             if (targetEnemy != null && targetEnemy.getHealth() == 0) {
                 targetEnemy.unsetTargeted();
                 targetEnemy = null;
             }
             if (distanceC(currentLocation.x, targetBuilding.getLocation().x, currentLocation.y, targetBuilding.getLocation().y) < 200) {
+                double radius = sqrt((targetBuilding.getWidth()*targetBuilding.getWidth()) + targetBuilding.getHeight()*targetBuilding.getHeight());
                 for (SquadVillagers i : enemies) {
                     for (Villager j : i.getVillagers()) {
                         if (j.getHealth() > 0) {
-                            if (distanceC(targetBuilding.getLocation().x, j.getCurrentLocation().x, targetBuilding.getLocation().y, j.getCurrentLocation().y) < targetBuilding.getHeight() + 30) {
+                            if (distanceC(targetBuilding.getLocation().x, j.getCurrentLocation().x, targetBuilding.getLocation().y, j.getCurrentLocation().y) < radius) {
                                 if (j.getTargeted() < 2) {
                                     targetEnemy = j;
                                     j.setTargeted();
@@ -330,7 +321,7 @@ public class Viking {
             }
             return;
         }
-        // If not figthing
+        // If not figthing loose target
         if (state != States.FIGHT && targetEnemy != null){
             targetEnemy.unsetTargeted();
             targetEnemy = null;
@@ -352,9 +343,13 @@ public class Viking {
 
 
     public void action() {
+        // update target
         findTargetEnemy();
         updateCurrentTarget();
-        vector();
+        // update vectors
+        vector = vector(currentLocation, currentTarget);
+        direction = direction(vector);
+
         // if dead
         if (state == States.DEAD){
             return;
@@ -365,7 +360,6 @@ public class Viking {
             if (distanceFromTargetBoat() < targetBoat.getLength()*2) {
                 currentLocation.x = targetBoat.getCurrentLocation().x;
                 currentLocation.y = targetBoat.getCurrentLocation().y;
-                state = States.INBOAT;
                 inBoat = true;
                 return;
             }
@@ -376,7 +370,7 @@ public class Viking {
         }
 
         // if fighting
-        if (state == States.FIGHT){
+        if (state == States.FIGHT && !inBoat){
             if (targetEnemy == null){
                 move();
                 return;
@@ -403,7 +397,7 @@ public class Viking {
             }
         }
 
-        if ( (state == States.LOSS || state == States.WIN || state == States.INBOAT) ){
+        if ( (state == States.LOSS || state == States.WIN || inBoat) ){
             if (currentLocation.x == targetBoat.getTargetLocation().x && currentLocation.y == targetBoat.getTargetLocation().y) {
                 exit();
                 return;
@@ -418,6 +412,7 @@ public class Viking {
 //            System.out.println("I am waiting");
         }
     }
+
     private void exit(){
         Random r = new Random();
         boolean generated = false, noColision;
@@ -425,7 +420,7 @@ public class Viking {
         // generating random point in radius of a boat
         while (!generated) {
             double angle = toRadians(random() * 360);
-            double radius = r.nextInt((targetBoat.getLength())) + targetBoat.getLength()/2;
+            double radius = r.nextInt((int) (targetBoat.getLength()*2));
             location.x = currentLocation.x + (int) (radius * cos(angle));
             location.y = currentLocation.y + (int) (radius * sin(angle));
             // if in bounds
@@ -455,12 +450,18 @@ public class Viking {
         }
     }
 
-    private boolean checkExit(Point location){
+    private boolean checkExit(Point toCheck){
+        if(toCheck.x < size || toCheck.y < size || toCheck.x > map.numRows - size || toCheck.y > map.numCols - size)
+            return false;
+        Point location;
         double angle2 = 0;
         while (angle2 < 6.3) {
-            if (map.getTerrainGrid()[location.x + (int) (size/2 * cos(angle2))][location.y + (int) (size/2 * sin(angle2))] == Colors.OCEAN) {
-                return false;
-            }
+            location = new Point(toCheck);
+            location.x += (int) (size * cos(angle2));
+            location.y += (int) (size * sin(angle2));
+            if(location.x > 0 && location.y > 0 && location.x < map.numRows && location.y < map.numCols)
+                if (map.getTerrainGrid()[location.x ][location.y] == Colors.OCEAN)
+                    return false;
             angle2 += 0.3;
         }
         return true;
@@ -477,12 +478,6 @@ public class Viking {
 
 
     // MOVING TEMP!!!
-    // Vector based on current target
-    private void vector(){
-        vector = -(int) (atan2(currentLocation.x - currentTarget.x, currentLocation.y - currentTarget.y)*(180/PI));
-        direction = direction(vector);
-    }
-
     public void move() {
         if (direction == Directions.UP) Up();
         if (direction == Directions.UPRIGHT) UpRight();
@@ -536,10 +531,11 @@ public class Viking {
         int y = currentLocation.y;
         if (!tryLeft(x,y))
             if (!tryDownLeft(x,y))
-                if (!tryUpLeft(x,y))
-                    if (!tryDown(x,y))
+                if (!tryDown(x,y))
+                    if (!tryDownRight(x,y))
+                    if (!tryUpLeft(x,y))
                         if (!tryUp(x,y))
-                            if (!tryDownRight(x,y))
+
                                 if (!tryUpRight(x,y))
                                     tryRight(x,y);
     }
@@ -562,11 +558,11 @@ public class Viking {
         int y = currentLocation.y;
         if (!tryUp(x,y))
             if (!tryUpRight(x,y))
-                if (!tryUpLeft(x,y))
-                    if (!tryRight(x,y))
-                        if (!tryLeft(x,y))
-                            if (!tryDownRight(x,y))
-                                if (!tryUpLeft(x,y))
+                if (!tryRight(x,y))
+                    if (!tryDownRight(x,y))
+                        if (!tryUpLeft(x,y))
+                            if (!tryLeft(x,y))
+                                if (!tryDownLeft(x,y))
                                     tryDown(x,y);
     }
 
@@ -614,12 +610,12 @@ public class Viking {
         int y = currentLocation.y;
         if (!tryUpLeft(x,y))
             if (!tryLeft(x,y))
-                if (!tryUp(x,y))
-                    if (!tryDownLeft(x,y))
-                        if (!tryUpRight(x,y))
-                            if (!tryDown(x,y))
-                                if (!tryRight(x,y))
-                                    tryDownRight(x,y);
+                if (!tryDownLeft(x,y))
+                    if (!tryDown(x,y))
+                        if (!tryDownRight(x,y))
+                            if (!tryRight(x,y))
+                                if (!tryUpRight(x,y))
+                                    tryUp(x,y);
     }
 
     private void DownLeft() {
@@ -727,7 +723,12 @@ public class Viking {
         // Weapon
         primeWeapon.draw(g, currentLocation, size, vector);
         // Shield
-        if (shield != null) shield.draw(g, currentLocation, size, vector + shieldDirection);
+        if (shield != null) {
+            if (state == States.RETREAT || state == States.WAITING || state == States.LOOTING || state == States.LOSS || inBoat)
+                shield.draw(g, currentLocation, size, vector + shieldAtBack);
+            else
+                shield.draw(g, currentLocation, size, vector + shieldDirection);
+        }
     }
 
 }
