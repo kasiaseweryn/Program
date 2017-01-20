@@ -20,7 +20,7 @@ public class Viking {
     // Stats for battle
     private int health;
     private double moral;
-    private int moralThreshold;
+    private double moralThreshold;
     private int defense;
     private int accuracy;
     private int dodge;
@@ -55,13 +55,14 @@ public class Viking {
     private Terrain map;
     private Village village;
     private Fleet fleet;
+    private Building base;
 
     // Other agents
     private ArrayList<SquadVikings> allies;
     private ArrayList<SquadVillagers> enemies;
 
     // CONSTRUCTOR
-    public Viking(Point location, Terrain map, Village village, Fleet fleet, Building targetBuilding, Color color, int size, ArrayList<SquadVikings> allies) {
+    public Viking(Point location, Terrain map, Village village, Fleet fleet, Building targetBuilding, Building base, Color color, int size, ArrayList<SquadVikings> allies) {
         Random r = new Random();
         // Stats for battle
         this.health = 100;
@@ -100,6 +101,7 @@ public class Viking {
         this.map = map;
         this.village = village;
         this.fleet = fleet;
+        this.base = base;
 
         // Other agents
         this.allies = allies;
@@ -254,7 +256,7 @@ public class Viking {
         return (state == States.WAITING || state == States.DEAD);
     }
 
-    // Updating currentTarget based on state // TODO: 19.01.17  
+    // Updating currentTarget based on state
     private void updateCurrentTarget(){
         switch (state){
             case States.DEAD:
@@ -352,6 +354,8 @@ public class Viking {
 
         // if dead
         if (state == States.DEAD){
+            if (loot != 0)
+                dropLoot();
             return;
         }
 
@@ -387,7 +391,7 @@ public class Viking {
 
         // if looting
         if (state == States.LOOTING){
-            if (distanceFromTargetBuilding() <= targetBuilding.getHeight()/3 + size && loot < 2){
+            if (distanceFromTargetBuilding() <= targetBuilding.getHeight()/3  && loot < 2){
                 loot += targetBuilding.removeLoot();
                 return;
             }
@@ -413,6 +417,11 @@ public class Viking {
         }
     }
 
+    // TODO: 19.01.17 implement leaving loot on the floor
+    private void dropLoot() {
+        loot = 0;
+    }
+
     private void exit(){
         Random r = new Random();
         boolean generated = false, noColision;
@@ -420,31 +429,28 @@ public class Viking {
         // generating random point in radius of a boat
         while (!generated) {
             double angle = toRadians(random() * 360);
-            double radius = r.nextInt((int) (targetBoat.getLength()*2));
+            double radius = r.nextInt((targetBoat.getLength()*2));
             location.x = currentLocation.x + (int) (radius * cos(angle));
             location.y = currentLocation.y + (int) (radius * sin(angle));
-            // if in bounds
-            if (location.x - (radius+size+1) > 0 && location.y - (radius+size+1) > 0 && location.x < map.numRows + (radius+size+1) && location.y < map.numCols + (radius+size+1)) {
-                // if on land
-                if (checkExit(location)) {
-                    // checking for vikings
-                    noColision = true;
-                    double spread = 1.1;
-                    for (SquadVikings j : this.allies) {
-                        for (Viking k : j.getVikings()) {
-                            double distance = distanceC(location.x, k.getCurrentLocation().x, location.y, k.getCurrentLocation().y);
-                            if (distance < size * spread) {
-                                noColision = false;
-                            }
+            // if in bounds and on land
+            if (checkExit(location)) {
+                // checking for vikings
+                noColision = true;
+                double spread = 1.1;
+                for (SquadVikings j : this.allies) {
+                    for (Viking k : j.getVikings()) {
+                        double distance = distanceC(location.x, k.getCurrentLocation().x, location.y, k.getCurrentLocation().y);
+                        if (distance < size * spread) {
+                            noColision = false;
                         }
                     }
-                    if (noColision) {
-                        currentLocation.x = location.x;
-                        currentLocation.y = location.y;
-                        inBoat = false;
-                        state = States.WAITING;
-                        generated = true;
-                    }
+                }
+                if (noColision) {
+                    currentLocation.x = location.x;
+                    currentLocation.y = location.y;
+                    inBoat = false;
+                    state = States.WAITING;
+                    generated = true;
                 }
             }
         }
@@ -470,8 +476,8 @@ public class Viking {
     // TODO: 19.01.17  implement moral increase for viking and his friends in a certain radius if enemy is hit
     private void attack() {
         Random r = new Random();
-        if (r.nextInt(101) < accuracy + primeWeapon.getAccuracy()){
-            if (r.nextInt(101) >= targetEnemy.getDodge())
+        if (r.nextInt(101) <= accuracy + primeWeapon.getAccuracy()){
+            if (r.nextInt(101) > targetEnemy.getDodge())
                 targetEnemy.damage(r.nextInt(6) + 1 + primeWeapon.getDamage(), primeWeapon.getPenetration());
         }
     }

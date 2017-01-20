@@ -16,10 +16,11 @@ public class Vikings {
     private Terrain map;
     private Village village;
     private Fleet fleet;
+    private Building base;
 
     private ArrayList<SquadVillagers> enemies;
 
-    public Vikings(Terrain map, Village village, Fleet fleet, Building base){
+    public Vikings(Terrain map, Village village, Fleet fleet, Building base, Point minMax){
         // Variables for generating
         double angle = 2.2;
         double radius = 1.1 * sqrt((base.getWidth()*base.getWidth()) + base.getHeight()*base.getHeight());
@@ -32,13 +33,14 @@ public class Vikings {
         this.map = map;
         this.village = village;
         this.fleet = fleet;
+        this.base = base;
 
         // Generating squads
         for (Building building:village.getBuildings()){
             angle += 0.5;
             location.x = base.getLocation().x + (int) (radius * cos(angle));
             location.y = base.getLocation().y + (int) (radius * sin(angle));
-            squads.add(new SquadVikings(map, village, fleet, building, new Point(location), squads));
+            squads.add(new SquadVikings(map, village, fleet, building, new Point(location), base, squads, minMax));
         }
     }
 

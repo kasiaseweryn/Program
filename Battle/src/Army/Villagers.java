@@ -15,7 +15,7 @@ public class Villagers {
 
     private ArrayList<SquadVikings> enemies;
 
-    public Villagers(Terrain map, Village village){
+    public Villagers(Terrain map, Village village, Point minMax){
         // Initializing
         this.squads = new ArrayList<>();
         this.state = States.FIGHT;
@@ -25,7 +25,7 @@ public class Villagers {
 
         // Generating squads
         for (Building i:village.getBuildings()){
-            squads.add(new SquadVillagers(map, village, i, squads));
+            squads.add(new SquadVillagers(map, village, i, squads, minMax));
         }
     }
 

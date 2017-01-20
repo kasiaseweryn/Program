@@ -23,12 +23,13 @@ public class SquadVikings {
     private Terrain map;
     private Village village;
     private Fleet fleet;
+    private Building base;
 
     // Other agents
     private ArrayList <SquadVikings> allies;
     private ArrayList <SquadVillagers> enemies;
 
-    public SquadVikings(Terrain map, Village village, Fleet fleet, Building target, Point center, ArrayList<SquadVikings> allies){
+    public SquadVikings(Terrain map, Village village, Fleet fleet, Building target, Point center, Building base, ArrayList<SquadVikings> allies, Point minMax){
         // Variables for generation
         Random r = new Random();
         boolean generated, noColision;
@@ -37,7 +38,7 @@ public class SquadVikings {
         int size = map.numCols/120;
 
         // Stats for squad
-        this.size = r.nextInt(3) + 8;
+        this.size = r.nextInt(minMax.y - minMax.x + 1) + minMax.x;
         this.vikings = new ArrayList<>();
         this.target = target;
         this.state = States.FIGHT;
@@ -46,6 +47,7 @@ public class SquadVikings {
         this.map = map;
         this.village = village;
         this.fleet = fleet;
+        this.base = base;
 
         // Other agents
         this.allies = allies;
@@ -83,7 +85,7 @@ public class SquadVikings {
                 if (noColision) {
                     if (vikings.size() == 0) color = Colors.VIKING_LEADER;                              // toDo make leader a boss! good stats ect :)
                     else color = Colors.VIKING;
-                    vikings.add(new Viking(location, map, village, fleet, target, color, size, allies));
+                    vikings.add(new Viking(location, map, village, fleet, target, base, color, size, allies));
                     generated = true;
                 }
             }
@@ -163,6 +165,7 @@ public class SquadVikings {
             case States.LOSS:
                 break;
             case States.WIN:
+                // TODO: 19.01.17 make them loot the rest of buildings if there is still loot
                 break;
         }
     }
@@ -174,7 +177,10 @@ public class SquadVikings {
             for (Building i : village.getBuildings()){
                 if (i.getLoot() != 0){
                     target = i;
-                    for (Viking j:vikings) j.setTargetBuilding(i);
+                    for (Viking j:vikings) {
+                        j.unsetLooting();
+                        j.setTargetBuilding(i);
+                    }
                     found = true;
                 }
                 if (found) break;
@@ -182,7 +188,7 @@ public class SquadVikings {
         }
     }
 
-    // // TODO: 18.01.17 make WIN case
+    // // TODO: 18.01.17 make WIN case so they loot what is left
     public void action() {
         updateTargetLocation();
         int looting = 0, counted = 0;
@@ -218,7 +224,6 @@ public class SquadVikings {
                 }
                 break;
             case States.WIN:
-                // TODO: 18.01.17 so they loot what is left
         }
         if (state == States.LOOTING) {
             for (Viking i : vikings) {
@@ -226,7 +231,7 @@ public class SquadVikings {
                     i.unsetLooting();
                 else
                     if (i.setLooting()) looting++;
-                if (looting > 3) break;
+                if (looting > 2) break;
             }
         }
 
