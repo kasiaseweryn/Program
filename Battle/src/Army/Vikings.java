@@ -20,6 +20,7 @@ public class Vikings {
 
     private ArrayList<SquadVillagers> enemies;
 
+    // TODO: 20.01.17 determine max loot by checking the amount of it in the village and the number of vikings
     public Vikings(Terrain map, Village village, Fleet fleet, Building base, Point minMax){
         // Variables for generating
         double angle = 2.2;

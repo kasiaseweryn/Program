@@ -13,6 +13,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 import java.util.TimerTask;
 
 /**
@@ -230,8 +231,29 @@ public class GUI extends JFrame {
         randomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                // TODO: 20.01.17 make him randomize things
-                info.setText("I will randomize");
+                Random r = new Random();
+                int village = r.nextInt(3);
+                switch (village){
+                    case 0:
+                        villageSize1.setSelected(true);
+                        break;
+                    case 1:
+                        villageSize2.setSelected(true);
+                        break;
+                    case 2:
+                        villageSize3.setSelected(true);
+                        break;
+                }
+                int max1 = r.nextInt(11);
+                int min1 = r.nextInt(max1 + 1);
+                int max2 = r.nextInt(11);
+                int min2 = r.nextInt(max2 + 1);
+                minField1.setValue(min1);
+                minField2.setValue(min2);
+                maxField1.setValue(max1);
+                maxField2.setValue(max2);
+                controller.setVikings(new Point(min1, max1));
+                controller.setVillagers(new Point(min2, max2));
             }
         });
 
