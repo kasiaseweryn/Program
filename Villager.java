@@ -6,6 +6,7 @@ import Map.Terrain;
 import Map.Village;
 import Schemes.Colors;
 import Schemes.Weapons;
+import static Colision.Distance.distanceC;
 
 import java.awt.*;
 import java.util.Random;
@@ -19,8 +20,8 @@ public class Villager {
     private int accuracy;
     private int dodge;
     private Point speed;
-    private Point currentLocation;
-    private Point previousLocation;
+    public Point currentLocation;
+    public Point previousLocation;
     private Building targetLocation;
     private Viking targetEnemy;
     private Weapon primeWeapon;
@@ -55,18 +56,20 @@ public class Villager {
         this.state = 1;
         this.health = 100;
         this.color = color;
-
         this.dodge = r.nextInt(11) + 10;
         this.accuracy = r.nextInt(21) + 50;
         this.moral = r.nextInt(21) + 40;
         this.defense = r.nextInt(3) + 2;
         this.primeWeapon = Weapons.ARSENAL[r.nextInt(Weapons.ARSENAL.length)];
+        this.previousLocation.x = currentLocation.x + r.nextInt(6)-3; 
+        this.previousLocation.y = currentLocation.y + r.nextInt(6)-3; 
     }
 
     public Villager() {
 
     }
 
+    public double distance(double x, double y){return Math.sqrt(Math.pow((currentLocation.getX() - x),2)+Math.pow((currentLocation.getY() - y),2));}//ok, jest
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
         // Villager
@@ -87,26 +90,128 @@ public class Villager {
             g2d.fillRect(currentLocation.x - size / 4, currentLocation.y - size / 2, size / 2, size / 4);
         }
     }
-    public void move()
-    {
-    	if (currentLocation.x != targetLocation.getLocation().x || currentLocation.y != targetLocation.getLocation().y) {
-            if (targetLocation.getLocation().x >= targetLocation.getLocation().y) {
-                if (currentLocation.y - targetLocation.getLocation().y > 0) currentLocation.y++;
-                else {
-                    if (currentLocation.y == targetLocation.getLocation().y && currentLocation.x > targetLocation.getLocation().x) currentLocation.x--;
-                    else currentLocation.x++;
-                }
-                if (currentLocation.y - targetLocation.getLocation().y < 0) currentLocation.y--;;
-            }
-            if (targetLocation.getLocation().x < targetLocation.getLocation().y){
-                if (currentLocation.x - targetLocation.getLocation().x > 0) currentLocation.x--;
-                else {
-                    if (currentLocation.x == targetLocation.getLocation().x && currentLocation.y > currentLocation.x) currentLocation.y++ ;
-                    else currentLocation.y--;
-                }
-                if (currentLocation.x - targetLocation.getLocation().x < 0) currentLocation.x++ ;
-            }
+    private boolean checkM(){
+        double interval = 3.5;
+        if(currentLocation.x == previousLocation.x && currentLocation.y == previousLocation.y) return false;
+        if(currentLocation.x < size/2 || currentLocation.y < size/2 || currentLocation.x > map.numRows - size/2 || currentLocation.y > map.numCols - size/2) return false;  //granice mapy
+        if(map.getTerrainGrid()[(int) (currentLocation.x - size/2/interval)][currentLocation.y] == Colors.OCEAN || map.getTerrainGrid()[currentLocation.x][(int) (currentLocation.y - size /2 /interval)] == Colors.OCEAN || map.getTerrainGrid()[(int) (currentLocation.x + size /2 / interval)][currentLocation.y] == Colors.OCEAN || map.getTerrainGrid()[currentLocation.x][(int) (currentLocation.y + size /2 /interval)] == Colors.OCEAN) return false; //sprawdzanie, czy villagers nie wpada do oceany 
+        return true;  //ok
+    }
+    public boolean checkB(){
+        for (Building i : village.getBuildings()){
+            if (distanceC(currentLocation.x, i.getLocation().x, currentLocation.y, i.getLocation().y) < size/2 + ( i.getHeight()/2)*Math.sqrt(2) ) return false;
         }
+        return true;
+    }
+    public void moveDefence()
+    {
+    	if (currentLocation.x != targetLocation.getLocation().x || currentLocation.y != targetLocation.getLocation().y)
+    	{
+    		if ((currentLocation.x < targetLocation.getLocation().x) && ((currentLocation.y < targetLocation.getLocation().y)))
+    		{
+    			currentLocation.x++; currentLocation.y++;
+    		}
+    		else
+    	    if ((currentLocation.x < targetLocation.getLocation().x) && ((currentLocation.y > targetLocation.getLocation().y)))
+    	    {
+    	    	currentLocation.x++; currentLocation.y--;
+    	    }
+            else
+            if ((currentLocation.x > targetLocation.getLocation().x) && ((currentLocation.y < targetLocation.getLocation().y)))
+            {
+            	currentLocation.x--; currentLocation.y++;	
+            }
+            else
+        	if ((currentLocation.x > targetLocation.getLocation().x) && ((currentLocation.y > targetLocation.getLocation().y)))
+        	{
+        		currentLocation.x--; currentLocation.y--;
+        	}
+            else    	
+            if ((currentLocation.x < targetLocation.getLocation().x) && ((currentLocation.y == targetLocation.getLocation().y)))
+            {
+            	currentLocation.x++;
+            }
+        	else
+        	if ((currentLocation.x == targetLocation.getLocation().x) && ((currentLocation.y < targetLocation.getLocation().y)))
+        	{
+        		currentLocation.y++;
+        	}
+            else
+            if ((currentLocation.x == targetLocation.getLocation().x) && ((currentLocation.y > targetLocation.getLocation().y)))
+            {
+            	currentLocation.y--;
+            }
+            else
+            if ((currentLocation.x > targetLocation.getLocation().x) && ((currentLocation.y == targetLocation.getLocation().y)))
+            {
+            	currentLocation.x--;
+            	
+            }
+    		
+    	}
+    } 
+    public void move(Point t)
+    {
+    	if (currentLocation.x != t.getLocation().x || currentLocation.y != t.getLocation().y)
+    	{
+    		if ((currentLocation.x < t.getLocation().x) && ((currentLocation.y < t.getLocation().y)))
+    		{
+    			currentLocation.x++; currentLocation.y++;
+    		}
+    		else
+    	    if ((currentLocation.x < t.getLocation().x) && ((currentLocation.y > t.getLocation().y)))
+    	    {
+    	    	currentLocation.x++; currentLocation.y--;
+    	    }
+            else
+            if ((currentLocation.x > t.getLocation().x) && ((currentLocation.y < t.getLocation().y)))
+            {
+            	currentLocation.x--; currentLocation.y++;	
+            }
+            else
+        	if ((currentLocation.x > t.getLocation().x) && ((currentLocation.y > t.getLocation().y)))
+        	{
+        		currentLocation.x--; currentLocation.y--;
+        	}
+            else    	
+            if ((currentLocation.x < t.getLocation().x) && ((currentLocation.y == t.getLocation().y)))
+            {
+            	currentLocation.x++;
+            }
+        	else
+        	if ((currentLocation.x == t.getLocation().x) && ((currentLocation.y < t.getLocation().y)))
+        	{
+        		currentLocation.y++;
+        	}
+            else
+            if ((currentLocation.x == t.getLocation().x) && ((currentLocation.y > t.getLocation().y)))
+            {
+            	currentLocation.y--;
+            }
+            else
+            if ((currentLocation.x > t.getLocation().x) && ((currentLocation.y == t.getLocation().y)))
+            {
+            	currentLocation.x--;
+            	
+            }
+    		
+    	}
+    }      
+    public void watchMove()
+    {
+    	   Point temp;
+    	   temp = currentLocation;
+           currentLocation = previousLocation;
+           previousLocation = temp;
+    }
+    public void defenceMove()
+    {
+     	if (distanceC(targetEnemy.getCurrentLocation().getX(), targetLocation.getLocation().getX(), targetEnemy.getCurrentLocation().getY(), targetLocation.getLocation().getY()) < 70 )
+        	 move(targetEnemy.getCurrentLocation());
+    }
+    public void retreatMove()
+    {
+    	move(targetLocation.getLocation());
     }
     
     public Point getCurrentLocation() {
