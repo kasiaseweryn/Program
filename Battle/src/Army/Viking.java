@@ -248,6 +248,8 @@ public class Viking {
             case States.FIGHT:
                 if (!moralCheck()) state = States.RETREAT;
                 break;
+            case States.IDLE:
+                if (targetEnemy != null ) state = States.FIGHT;
         }
     }
 
@@ -312,6 +314,7 @@ public class Viking {
                                 if (j.getTargeted() < 2) {
                                     targetEnemy = j;
                                     j.setTargeted();
+                                    state = States.FIGHT;
                                     found = true;
                                 }
                             }
@@ -351,6 +354,7 @@ public class Viking {
         // update vectors
         vector = vector(currentLocation, currentTarget);
         direction = direction(vector);
+        double radius = sqrt((targetBuilding.getWidth()*targetBuilding.getWidth()) + targetBuilding.getHeight()*targetBuilding.getHeight());
 
         // if dead
         if (state == States.DEAD){
@@ -376,7 +380,10 @@ public class Viking {
         // if fighting
         if (state == States.FIGHT && !inBoat){
             if (targetEnemy == null){
-                move();
+                if (distanceFromTargetBuilding() > radius)
+                    move();
+                else
+                    state = States.IDLE;
                 return;
             }
             else if (distanceFromTargetEnemy() <= size + primeWeapon.getRange()) {
@@ -391,7 +398,7 @@ public class Viking {
 
         // if looting
         if (state == States.LOOTING){
-            if (distanceFromTargetBuilding() <= targetBuilding.getHeight()/3  && loot < 2){
+            if (distanceFromTargetBuilding() <= targetBuilding.getHeight()/4  && loot < 2){
                 loot += targetBuilding.removeLoot();
                 return;
             }
@@ -407,13 +414,17 @@ public class Viking {
                 return;
             }
             else {
-                if (!inBoat) move();
+                if (!inBoat)
+                    move();
                 return;
             }
         }
 
         if (state == States.WAITING){
-//            System.out.println("I am waiting");
+            System.out.println("I am waiting");
+        }
+        if (state == States.IDLE){
+            System.out.println("I am idle");
         }
     }
 

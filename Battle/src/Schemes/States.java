@@ -11,4 +11,5 @@ public class States {
     public static final int WAITING = 4;
     public static final int WIN = 5;
     public static final int LOSS = 6;
+    public static final int IDLE = 7;
 }

@@ -178,7 +178,8 @@ public class SquadVikings {
                 if (i.getLoot() != 0){
                     target = i;
                     for (Viking j:vikings) {
-                        j.unsetLooting();
+                        j.setFighting();
+                        //j.unsetLooting();
                         j.setTargetBuilding(i);
                     }
                     found = true;
