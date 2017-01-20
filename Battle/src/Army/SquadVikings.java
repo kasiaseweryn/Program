@@ -119,6 +119,11 @@ public class SquadVikings {
             i.setReAttack();
     }
 
+    public void setMaxLoot(int maxLoot){
+        for (Viking i : vikings)
+            i.setMaxLoot(maxLoot);
+    }
+
     // Getters
     public int getState() {
         return state;
@@ -140,7 +145,6 @@ public class SquadVikings {
         // Update state of squads
         for (Viking i : vikings) {
             i.estimateState();
-            //System.out.print(i.getState());
         }
 
         int dead = 0, retreated = 0, fighting = 0;
@@ -179,7 +183,6 @@ public class SquadVikings {
                     target = i;
                     for (Viking j:vikings) {
                         j.setFighting();
-                        //j.unsetLooting();
                         j.setTargetBuilding(i);
                     }
                     found = true;
@@ -206,34 +209,24 @@ public class SquadVikings {
                 // If building has loot
                 if (target.getLoot() > 0) {
                     for (SquadVillagers i : enemies)
-                        for (Villager j : i.getVillagers()) {
+                        for (Villager j : i.getVillagers())
                             if (j.getHealth() > 0)
                                 // If enemy is alive and in range
                                 if (distanceC(target.getLocation().x, j.getCurrentLocation().x, target.getLocation().y, j.getCurrentLocation().y) < radius)
                                     counted++;
-                        }
-                    // If found less then 2 enemies set some vikings to loot
-                    if (counted == 0) {
+                    // If no enemies set some vikings to loot
+                    if (counted == 0)
                         for (Viking i : vikings){
-                            if (i.getState() != States.DEAD && !i.getInBoat() && i.getState() != States.RETREAT && i.getLoot() < 2){
-                                i.setLooting();
-                                looting++;
-                            }
+                            if (i.setLooting()) looting++;
                             if (looting > 2) break;
                         }
-                    }
+                    else
+                        for (Viking i : vikings)
+                            i.unsetLooting();
                 }
                 break;
             case States.WIN:
-        }
-        if (state == States.LOOTING) {
-            for (Viking i : vikings) {
-                if (i.getLoot() == 2)
-                    i.unsetLooting();
-                else
-                    if (i.setLooting()) looting++;
-                if (looting > 2) break;
-            }
+                break;
         }
 
         for (Viking i : vikings) i.action();

@@ -25,6 +25,7 @@ public class Viking {
     private int accuracy;
     private int dodge;
     private int loot;
+    private int maxLoot;
     private int state;
     private boolean inBoat;
     private int targeted;
@@ -72,6 +73,7 @@ public class Viking {
         this.accuracy = r.nextInt(31) + 30;
         this.dodge = r.nextInt(21) + 10;
         this.loot = 0;
+        this.maxLoot = 1;
         this.state = States.FIGHT;
         this.inBoat = false;
         this.targeted = 0;
@@ -137,9 +139,13 @@ public class Viking {
         this.targetBuilding = targetBuilding;
     }
 
+    public void setMaxLoot(int maxLoot){
+        this.maxLoot = maxLoot;
+    }
+
     // Changing states
     public boolean setLooting() {
-        if (state != States.DEAD && state != States.RETREAT) {
+        if (state != States.DEAD && state != States.RETREAT && !inBoat && loot < maxLoot ) {
             state = States.LOOTING;
             return true;
         }
@@ -166,7 +172,7 @@ public class Viking {
     }
 
     public void setFighting() {
-        if (state != States.DEAD && state != States.LOSS && state != States.WIN) state = States.FIGHT;
+        if (state != States.DEAD && state != States.LOSS && state != States.WIN && state != States.RETREAT) state = States.FIGHT;
     }
 
     // Changing state of being targeted
@@ -204,11 +210,16 @@ public class Viking {
         return inBoat;
     }
 
+    public int getMaxLoot() {
+        return maxLoot;
+    }
+
 
     // OTHER FUNCTIONS
 
     // Moral
     public void updateMoral() {
+
         // TODO: 14.01.17 make it based on situations and stuff
     }
     private boolean moralCheck(){
@@ -421,10 +432,8 @@ public class Viking {
         }
 
         if (state == States.WAITING){
-            System.out.println("I am waiting");
         }
         if (state == States.IDLE){
-            System.out.println("I am idle");
         }
     }
 
@@ -747,5 +756,4 @@ public class Viking {
                 shield.draw(g, currentLocation, size, vector + shieldDirection);
         }
     }
-
 }

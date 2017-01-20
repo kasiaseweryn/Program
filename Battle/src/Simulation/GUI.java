@@ -244,10 +244,10 @@ public class GUI extends JFrame {
                         villageSize3.setSelected(true);
                         break;
                 }
-                int max1 = r.nextInt(11);
-                int min1 = r.nextInt(max1 + 1);
-                int max2 = r.nextInt(11);
-                int min2 = r.nextInt(max2 + 1);
+                int max1 = r.nextInt(10) + 1;
+                int min1 = r.nextInt(max1) + 1;
+                int max2 = r.nextInt(10) + 1;
+                int min2 = r.nextInt(max2) + 1;
                 minField1.setValue(min1);
                 minField2.setValue(min2);
                 maxField1.setValue(max1);

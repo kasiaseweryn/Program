@@ -43,6 +43,18 @@ public class Vikings {
             location.y = base.getLocation().y + (int) (radius * sin(angle));
             squads.add(new SquadVikings(map, village, fleet, building, new Point(location), base, squads, minMax));
         }
+
+        double loot = 0, size = 0;
+        int maxLoot;
+        for (Building building : village.getBuildings()){
+            loot += building.getLoot();
+        }
+        for (SquadVikings squadVikings : squads)
+            for (Viking viking : squadVikings.getVikings())
+                size ++;
+
+        maxLoot = (int) ceil(loot/size);
+        setMaxLoot(maxLoot);
     }
 
     // Setters
@@ -53,6 +65,10 @@ public class Vikings {
         }
     }
 
+    public void setMaxLoot(int maxLoot){
+        for (SquadVikings i : squads)
+            i.setMaxLoot(maxLoot);
+    }
 
     // Getters
     public ArrayList<SquadVikings> getSquads() {
@@ -70,9 +86,7 @@ public class Vikings {
         // Update state of squads
         for (SquadVikings i : squads) {
             i.estimateState();
-            //System.out.print(i.getState());
         }
-        //System.out.println('\n');
 
         int lost = 0, retreated = 0, looted = 0, defeated = 0;
 

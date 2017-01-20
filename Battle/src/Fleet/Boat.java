@@ -449,8 +449,6 @@ public class Boat {
         g.fillRect(currentLocation.x, currentLocation.y, 1, 1);
         // Target
         g.fillRect(targetLocation.x, targetLocation.y, 3, 3);
-        // Start
-        g.fillRect(startLocation.x, startLocation.y, 3, 3);
     }
 
 }
